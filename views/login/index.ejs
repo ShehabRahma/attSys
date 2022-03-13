@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Font Awesome -->
+  <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" /> -->
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+  <!-- MDB -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.10.2/mdb.min.css" rel="stylesheet" />
+  <!-- css -->
+  <link rel="stylesheet" href="style.css" />
+  <title>attSys Login</title>
+</head>
+
+<body>
+  <section style="height: 92vh; background-color: #FAFAFA;">
+    <div class="container py-5 h-100">
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+          <div class="card text-body bg-light" style="border-radius: 1rem;">
+            <div class="card-body text-center p-5 pb-0">
+              <div class="mb-md-5 mt-md-4 pb-1">
+                <h2 class="fw-bold mb-2 text-primary text-opacity-80">UOB-attSys</h2>
+                <p class="text-body-50 mt-4 mb-5">
+                  Please enter your email and password!
+                </p>
+                <form class="form-body" action="POST">
+                  <div class="form-outline mb-4">
+                    <input type="email" name="email" id="email" class="form-control form-control-lg" required />
+                    <label class="form-label" for="email">Email</label>
+                  </div>
+                  <div class="form-outline mb-4">
+                    <input type="password" name="password" id="password" class="form-control form-control-lg"
+                      required />
+                    <label class="form-label" for="password">Password</label>
+                  </div>
+                  <button class="btn btn-primary btn-lg px-5 mt-5 mb-4" type="submit">
+                    Login
+                  </button>
+                  <p class="small fw-bold pb-lg-2 mt-5" data-mdb-toggle="modal" data-mdb-target="#forgotPssModal">
+                    <a href="#" style="color:#757575">Forgot password?</a>
+                  </p>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- Modal -->
+  <div class="modal fade" id="forgotPssModal" tabindex="-1" aria-labelledby="forgotPssModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header d-flex">
+          <h5 class="modal-title flex-grow-1 text-body" id="forgotPssModalLabel">Contact Zain Center
+          </h5>
+          <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body pt-5 pb-5">
+          <a href="#" id="person1" class="d-inline-block mb-4" data-mdb-toggle="tooltip" data-mdb-placement="right"
+            title="copy" onclick="copy(this.id)" style="color:#757575">person1@stu.uob.edu.bh</a>
+          <br>
+          <a href="#" id="person2" class="d-inline-block" data-mdb-toggle="tooltip" data-mdb-placement="right"
+            title="copy" onclick="copy(this.id)" style="color:#757575">person2@stu.uob.edu.bh</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- footer -->
+  <footer class="text-center text-lg-start bg-light text-muted">
+    <div class="text-center p-4" style="background-color: rgba(0, 0, 0, 0.05);">
+      © 2022 Copyright:&nbsp&nbsp
+      <a class="text-reset fw-bold" href="#" data-mdb-toggle="tooltip" data-mdb-placement="top"
+        title="copy email to clipboard" onclick="specialCopy('akbar.alsaleh@gmail.com')">Akbar</a>
+
+      <p class="text-reset fw-bold d-inline">&nbsp & &nbsp</p>
+
+      <a id="shehab" class="text-reset fw-bold" href="#" data-mdb-toggle="tooltip" data-mdb-placement="top"
+        title="copy email to clipboard" onclick="specialCopy('shehabrahma@gmail.com')">Shehab</a>
+    </div>
+  </footer>
+  <!-- js -->
+  <script type="text/javascript" src="index.js"></script>
+  <!-- MDB -->
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.10.2/mdb.min.js"></script>
+</body>
+
+</html>
