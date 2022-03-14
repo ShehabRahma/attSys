@@ -1,0 +1,46 @@
+<!-- footer -->
+<footer class="text-center text-lg-start bg-light text-muted">
+  <div class="text-center p-4" style="background-color: rgba(0, 0, 0, 0.05);">
+    &copy; 2022 Copyright:&nbsp&nbsp
+    <a class="tip text-reset fw-bold" href="#" onclick="specialCopy('akbar.alsaleh@gmail.com', 'akbar')">Akbar<span
+        id="akbar" class="fw-normal">Click To Copy Email</span></a>
+
+    <p class="text-reset d-inline">&nbsp & &nbsp</p>
+
+    <a class="tip text-reset fw-bold" href="#" onclick="specialCopy('shehabrahma@gmail.com', 'shehab')">Shehab<span
+        id="shehab" class="fw-normal">Click To Copy Email</span></a>
+  </div>
+</footer>
+
+<script>
+  function copy(id) {
+    var element = document.getElementById(id)
+    var r = document.createRange();
+    r.selectNode(element);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(r);
+    document.execCommand('copy');
+    window.getSelection().removeAllRanges();
+
+  }
+
+  function specialCopy(content, id) {
+    var span = document.getElementById(id);
+    span.innerHTML = 'Copied!';
+    setTimeout(() => {
+      span.innerHTML = 'Click to copy email';
+    }, 1500);
+
+    var tempInput = document.createElement("input");
+    tempInput.style = "position: absolute; left: -1000px; top: -1000px";
+    tempInput.value = content;
+    document.body.appendChild(tempInput);
+    tempInput.select();
+    document.execCommand("copy");
+    document.body.removeChild(tempInput);
+
+  }
+</script>
+
+<!-- MDB -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.10.2/mdb.min.js"></script>
