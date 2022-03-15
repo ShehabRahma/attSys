@@ -14,13 +14,19 @@ const flash         = require('express-flash')
 const session       = require('express-session')
 
 const initializePassport = require('./passport-config');
-initializePassport(passport, email => {
-    user.findOne({email: email}, (err,doc)=>{
-        if(err) console.log(err.message);
-        
-        console.log("Res",doc);
-        return doc;
-    })
+initializePassport(
+    passport, 
+    email => {
+        const x=user.findOne({email: email}, (err,doc)=>{
+            if(err) console.log(err.message);
+            console.log("Res",doc);
+            return doc;
+        })
+        if(x.email===email){return doc.email}
+        else{return(console.error("bitch"))}
+    },
+    id => {
+    
 })
 
 
