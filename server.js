@@ -34,9 +34,7 @@ app.use(passport.session())
 
 app.get('/home', Auth, homeGET);
 app.get('/login', NotAuth, loginGET);
-
-app.post('/admin', adminPOST
-);
+app.post('/admin', adminPOST);
 app.post('/login', passport.authenticate('local', {
     successRedirect:'/home',
     failureRedirect:'/login',

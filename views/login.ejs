@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<%-include('./partials/head.ejs')%>
+<head>
+  <%-include('./partials/essentialsHead.ejs')%>
+  <%-include('./partials/MDB-GoogleFonts.ejs')%>
+</head>
 
   <body>
-    <section style="height: 92vh; background-color: #FAFAFA;">
+    <section style="min-height: 92vh; background-color: #FAFAFA;">
       <div class="container py-5 h-100">
         <div class="row d-flex justify-content-center align-items-center h-100">
           <div class="col-12 col-md-8 col-lg-6 col-xl-5">
@@ -17,7 +19,7 @@
                   </p>
                   <form class="form-body" method="POST" action="/login" >
                       <% if(messages.error){ %> 
-                        <p class="text-body-50 fw-bold">Incorrect Email Or Password</p> 
+                        <p class="text-body-50 fw-bold"><%= messages.error %> </p> 
                       <% } %> 
                     <div class="form-outline mb-4">
                       <input type="email" id="email" name="email" class="form-control form-control-lg" required />
@@ -66,7 +68,7 @@
     </section>
 
     <!-- Footer & MDB CDN -->
-    <%-include('./partials/footer.ejs')%>
+    <%-include('./partials/footer&MDB.ejs')%>
   </body>
 
 </html>

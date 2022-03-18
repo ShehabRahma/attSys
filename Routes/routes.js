@@ -10,13 +10,6 @@ const loginGET = (req, res) => {
     res.render("login", {title: "Login"})
 }
 
-// const loginPost = () => {
-//     passport.authenticate('local', {
-//         successRedirect:'/home',
-//         failureRedirect:'/login',
-//         failureFlash: true
-//     })
-// }
 const adminPOST = async (req, res) => {
     try{
         const hashedPass = await bcrypt.hash(req.body.password, 10);

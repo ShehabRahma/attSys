@@ -1,1 +1,233 @@
-<h1>Hi <%= name  %> </h1>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%-include('./partials/essentialsHead.ejs')%>
+    <%-include('./partials/MDB-GoogleFonts.ejs')%>
+    <%-include('./partials/font_awesome.ejs')%>
+</head>
+
+<body class="bg-light">
+
+    <%-include('./partials/navbar.ejs')%>
+
+    <section style="min-height: 100vh; margin-bottom: 10vh;">
+        <div class="container p-5">
+            <div class="row">
+                <div class="col-md-9">
+                    <h4 class="">Welcome, <br>Dr. <%= name  %></h4>
+                </div>
+                <div class="col-md">
+                    <button class="btn btn-primary btn-lg d-inline-block" data-mdb-toggle="modal"
+                    data-mdb-target="#quickRecordModal">Quick Record</button>
+                    <div class="dropdown d-inline-block">
+                        <button class="btn btn-lg" type="button" data-mdb-toggle="dropdown" aria-expanded="false" style="background-color: #686868;"><i class="fa fa-cog text-light" aria-hidden="true"></i></button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <li><a class="dropdown-item fw-bold" data-mdb-toggle="modal"
+                                data-mdb-target="#exportAllModal" href="#">Export All Attendance</a></li>
+                            <li><a class="dropdown-item fw-bold text-danger" href="#">Log out</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-top: 4vh;">
+                <div class="col">
+                    <h3 class="display-5 text-center">Courses</h3>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col">
+                    <form action="">
+                        <div class="input-group d-flex justify-content-center">
+                            <div class="form-outline">
+                                <input type="search" id="form1" class="form-control" />
+                                <label class="form-label" for="form1">Search</label>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="container" style="margin-top:10vh;">
+                <div class="row mt-2">
+                    <div class="col-4 p-5">
+                        <div class="card text-center ">
+                            <div class="bg-image hover-overlay ripple" data-mdb-ripple-color="light">
+                                <img src="https://mdbootstrap.com/img/new/standard/nature/111.webp" class="img-fluid" />
+                                <a href="#!">
+                                    <div class="mask" style="background-color: rgba(251, 251, 251, 0.15)"></div>
+                                </a>
+                            </div>
+    
+                            <div class="card-body">
+                                <h5 class="card-title">Card title</h5>
+    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4 p-5">
+                        <div class="card text-center ">
+                            <div class="bg-image hover-overlay ripple" data-mdb-ripple-color="light">
+                                <img src="https://mdbootstrap.com/img/new/standard/nature/111.webp" class="img-fluid" />
+                                <a href="#!">
+                                    <div class="mask" style="background-color: rgba(251, 251, 251, 0.15)"></div>
+                                </a>
+                            </div>
+    
+                            <div class="card-body">
+                                <h5 class="card-title">Card title</h5>
+    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4 p-5">
+                        <div class="card text-center ">
+                            <div class="bg-image hover-overlay ripple" data-mdb-ripple-color="light">
+                                <img src="https://mdbootstrap.com/img/new/standard/nature/111.webp" class="img-fluid" />
+                                <a href="#!">
+                                    <div class="mask" style="background-color: rgba(251, 251, 251, 0.15)"></div>
+                                </a>
+                            </div>
+    
+                            <div class="card-body">
+                                <h5 class="card-title">Card title</h5>
+    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4 p-5">
+                        <div class="card text-center ">
+                            <div class="bg-image hover-overlay ripple" data-mdb-ripple-color="light">
+                                <img src="https://mdbootstrap.com/img/new/standard/nature/111.webp" class="img-fluid" />
+                                <a href="#!">
+                                    <div class="mask" style="background-color: rgba(251, 251, 251, 0.15)"></div>
+                                </a>
+                            </div>
+    
+                            <div class="card-body">
+                                <h5 class="card-title">Card title</h5>
+    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4 p-5">
+                        <div class="card text-center ">
+                            <div class="bg-image hover-overlay ripple" data-mdb-ripple-color="light">
+                                <img src="https://mdbootstrap.com/img/new/standard/nature/111.webp" class="img-fluid" />
+                                <a href="#!">
+                                    <div class="mask" style="background-color: rgba(251, 251, 251, 0.15)"></div>
+                                </a>
+                            </div>
+    
+                            <div class="card-body">
+                                <h5 class="card-title">Card title</h5>
+    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4 p-5">
+                        <div class="card text-center ">
+                            <div class="bg-image hover-overlay ripple" data-mdb-ripple-color="light">
+                                <img src="https://mdbootstrap.com/img/new/standard/nature/111.webp" class="img-fluid" />
+                                <a href="#!">
+                                    <div class="mask" style="background-color: rgba(251, 251, 251, 0.15)"></div>
+                                </a>
+                            </div>
+    
+                            <div class="card-body">
+                                <h5 class="card-title">Card title</h5>
+    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4 p-5">
+                        <div class="card text-center ">
+                            <div class="bg-image hover-overlay ripple" data-mdb-ripple-color="light">
+                                <img src="https://mdbootstrap.com/img/new/standard/nature/111.webp" class="img-fluid" />
+                                <a href="#!">
+                                    <div class="mask" style="background-color: rgba(251, 251, 251, 0.15)"></div>
+                                </a>
+                            </div>
+    
+                            <div class="card-body">
+                                <h5 class="card-title">Card title</h5>
+    
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <div class="modal fade" id="quickRecordModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content px-5 pb-3">
+                <div class="modal-header d-flex justify-content-center">
+                    <h5 class="modal-title">Quick Record</h5>
+                </div>
+                <div class="modal-body">
+                    <form action="">
+                        <div class="form-outline mb-2">
+                            <input type="text" id="courseID" class="form-control" placeholder='Ex: ITCE101/1' required/>
+                            <label class="form-label" for="courseID">CourseID/Section</label>
+                        </div>
+                        <div class="form-outline mb-2">
+                            <input type="text" id="stID" class="form-control" placeholder='Ex: 20186030' required/>
+                            <label class="form-label" for="stID">Student ID</label>
+                        </div>
+                        <div class="mt-2 mb-2">
+                            <input type="date" id="date" name="date" required>
+                        </div>
+                        <div class="d-flex justify-content-center" style="margin-top: 8vh;">
+                            <button type="submit" class="btn btn-lg btn-primary">Record</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="exportAllModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content px-5 pb-3">
+                <div class="modal-header d-flex justify-content-center">
+                    <h5 class="modal-title">Export All Attendance</h5>
+                </div>
+                <div class="modal-body">
+                    <form action="">
+                        <div class="my-2 fw-bold text-muted">
+                            <label class="me-2" for="fromDate">From: </label>
+                            <input type="date" id="fromDate" name="fromDate" required>
+                        </div>
+                        <div class="my-2 fw-bold text-muted">
+                            <label class="me-2" for="toDate">To: </label>
+                            <input type="date" id="toDate" name="toDate" required>
+                        </div>
+                        <div class="fw-bold text-muted my-2">
+                            <label class="me-2" for="format">Format: </label>
+                            <div class="btn-group" id="format">
+                                <input type="radio" class="btn-check" name="options" id="JSON" autocomplete="off" checked />
+                                <label class="btn btn-light" for="JSON">JSON</label>
+                              
+                                <input type="radio" class="btn-check" name="options" id="EXCEL" autocomplete="off" />
+                                <label class="btn btn-light" for="EXCEL">EXCEL</label>
+    
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-center" style="margin-top: 8vh;">
+                            <button type="submit" class="btn btn-lg btn-primary">Export</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer & MDB CDN -->
+    <%-include('./partials/footer&MDB.ejs')%>
+
+</body>
+</html>
