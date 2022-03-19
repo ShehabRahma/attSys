@@ -1,11 +1,13 @@
 const bcrypt        = require('bcrypt');
 const User          = require('../Models/userModel')
 const Course        = require("../Models/courseModel")
-const getCourses        = require("../functions/getCourses")
 
 
-const homeGET = (req, res) => {
-    res.render("home", {title: "Home", user: req.user, Course, getCourses})
+const homeGET = async (req, res) => {
+    const query = await Course.find({instructor_email: req.user.email}, {_id: 0, courseID: 1})
+    const courses = JSON.parse(JSON.stringify(query))   // must be done, cause the object received from mongo is type BSON
+
+    res.render("home", {title: "Home", user: req.user, courses})
 }
 
 const loginGET = (req, res) => {

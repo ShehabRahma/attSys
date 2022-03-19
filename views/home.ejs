@@ -11,7 +11,7 @@
 
     <%-include('./partials/navbar.ejs')%>
 
-    <section style="min-height: 100vh; margin-bottom: 10vh;">
+    <section style="min-height: 100vh; margin-bottom: 15vh;">
         <div class="container p-5">
             <div class="row">
                 <div class="col-md-9">
@@ -23,9 +23,10 @@
                     <div class="dropdown d-inline-block">
                         <button class="btn btn-lg" type="button" data-mdb-toggle="dropdown" aria-expanded="false" style="background-color: #686868;"><i class="fa fa-cog text-light" aria-hidden="true"></i></button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <li><a class="dropdown-item fw-bold" data-mdb-toggle="modal"
-                                data-mdb-target="#exportAllModal" href="#">Export All Attendance</a></li>
-                            <li><a class="dropdown-item fw-bold text-danger" href="#">Log out</a></li>
+                            <li class="dropdown-item fw-bold text-muted" data-mdb-toggle="modal" data-mdb-target="#exportAllModal"
+                                style="cursor: pointer;" onclick="">Export All Attendance</li>
+        
+                            <li class="dropdown-item fw-bold text-danger" style="cursor: pointer;" onclick="">Log out</li>
                         </ul>
                     </div>
                 </div>
@@ -52,20 +53,26 @@
             </div>
             <div class="container" style="margin-top:10vh;">
                 <div class="row mt-2">
-                    <% console.log(getCourses(user.email)) %>
-
+                    <% let imgCounter = 0; %> 
+                    <% for(let i = 0; i < courses.length; i++) {%>
+                        <% (imgCounter > 15) ? imgCounter = 0: imgCounter++;%> 
+                        <div class="col-4 p-5">
+                            <div class="card text-center">
+                                <div class="bg-image hover-overlay ripple" data-mdb-ripple-color="light">
+                                    <img src=<%= "img/"+imgCounter+".jpg" %>  class="img-fluid"/>
+                                    <span onclick="" style="cursor: pointer;">
+                                        <div class="mask" style="background-color: rgba(251, 251, 251, 0.15)"></div>
+                                    </span>
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title" onclick="" style="cursor: pointer;"><%= courses[i].courseID %> </h5>
+                                </div>
+                            </div>
+                        </div>
+                     <% } %>
                 </div>
-            </div> 
-            <!-- .then((queriedCourses) => queriedCourses.forEach); -->
-            <!-- console.log(JSON.parse(JSON.stringify(queriedCourses[0])).ends) -->
-            <!-- JSON.parse(JSON.stringify(queriedCourses[0])).start -->
-            
-
-            
-
-
-
-
+            </div>
+  
         </div>
     </section>
 
