@@ -1,9 +1,11 @@
 const bcrypt        = require('bcrypt');
 const User          = require('../Models/userModel')
+const Course        = require("../Models/courseModel")
+const getCourses        = require("../functions/getCourses")
 
 
 const homeGET = (req, res) => {
-    res.render("home", {title: "Home", name: req.user.name})
+    res.render("home", {title: "Home", user: req.user, Course, getCourses})
 }
 
 const loginGET = (req, res) => {

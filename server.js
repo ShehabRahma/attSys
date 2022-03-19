@@ -6,6 +6,7 @@ const mongoose      = require("mongoose")
 const dotenv        = require('dotenv').config({path : path.join(__dirname,'.env')})
 const DB_LINK       = process.env.DB_LINK
 const User          = require('./Models/userModel')
+const Course          = require('./Models/courseModel')
 const passport      = require('passport');
 const flash         = require('express-flash')
 const session       = require('express-session')
@@ -40,6 +41,13 @@ app.post('/login', passport.authenticate('local', {
     failureRedirect:'/login',
     failureFlash: true
 }));
+
+// app.get('/temp', async(req, res) => {
+
+//     const queriedCourses = await Course.find({instructor_email: req.body.email})
+//     console.log(queriedCourses)
+//     res.sendStatus(200)
+// });
 
 
 app.listen(process.env.PORT || 3000, (req, res) => {
