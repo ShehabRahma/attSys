@@ -26,7 +26,7 @@
                             <li class="dropdown-item fw-bold text-muted" data-mdb-toggle="modal" data-mdb-target="#exportAllModal"
                                 style="cursor: pointer;" onclick="">Export All Attendance</li>
         
-                            <li class="dropdown-item fw-bold text-danger" style="cursor: pointer;" onclick="">Log out</li>
+                            <li class="dropdown-item fw-bold text-danger" style="cursor: pointer;" onclick="location.replace('/logout')">Log out</li>
                         </ul>
                     </div>
                 </div>
@@ -54,18 +54,20 @@
             <div class="container" style="margin-top:10vh;">
                 <div class="row mt-2">
                     <% let imgCounter = 0; %> 
+                    <% let redirect; %> 
                     <% for(let i = 0; i < courses.length; i++) {%>
                         <% (imgCounter > 15) ? imgCounter = 0: imgCounter++;%> 
-                        <div class="col-4 p-5">
+                        <% redirect = "location.assign('/course/" + courses[i].courseID +"')"  %> 
+                        <div class="col-4 p-5"> 
                             <div class="card text-center">
                                 <div class="bg-image hover-overlay ripple" data-mdb-ripple-color="light">
-                                    <img src=<%= "img/"+imgCounter+".jpg" %>  class="img-fluid"/>
-                                    <span onclick="" style="cursor: pointer;">
+                                    <img src=<%= "img/"+imgCounter+".webp" %>  class="img-fluid"/>
+                                    <span onclick=<%= redirect %>  style="cursor: pointer;">
                                         <div class="mask" style="background-color: rgba(251, 251, 251, 0.15)"></div>
                                     </span>
                                 </div>
                                 <div class="card-body">
-                                    <h5 class="card-title" onclick="" style="cursor: pointer;"><%= courses[i].courseID %> </h5>
+                                    <h5 class="card-title" onclick=<%= redirect %>  style="cursor: pointer;"><%= courses[i].courseID %> </h5>
                                 </div>
                             </div>
                         </div>
@@ -76,7 +78,7 @@
         </div>
     </section>
 
-    <div class="modal fade" id="quickRecordModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="quickRecordModal" tabindex="-1" aria-labelledby="quickRecordModal" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content px-5 pb-3">
                 <div class="modal-header d-flex justify-content-center">
@@ -85,8 +87,8 @@
                 <div class="modal-body">
                     <form action="">
                         <div class="form-outline mb-2">
-                            <input type="text" id="courseID" class="form-control" placeholder='Ex: ITCE101/1' required/>
-                            <label class="form-label" for="courseID">CourseID/Section</label>
+                            <input type="text" id="courseID" class="form-control" placeholder='Ex: ITCE101-1' required/>
+                            <label class="form-label" for="courseID">CourseID - Section</label>
                         </div>
                         <div class="form-outline mb-2">
                             <input type="text" id="stID" class="form-control" placeholder='Ex: 20186030' required/>
@@ -94,6 +96,16 @@
                         </div>
                         <div class="mt-2 mb-2">
                             <input type="date" id="date" name="date" required>
+                        </div>
+                        <div class="mt-4 d-flex justify-content-center">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="quickRadio" id="Attendant" value="Attendant" checked/>
+                                <label class="form-check-label" for="Attendant">Attendant</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="quickRadio" id="Absent" value="Absent" />
+                                <label class="form-check-label" for="Absent">Absent</label>
+                            </div>
                         </div>
                         <div class="d-flex justify-content-center" style="margin-top: 8vh;">
                             <button type="submit" class="btn btn-lg btn-primary">Record</button>
@@ -103,7 +115,7 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="exportAllModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="exportAllModal" tabindex="-1" aria-labelledby="exportAllModal" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content px-5 pb-3">
                 <div class="modal-header d-flex justify-content-center">
@@ -127,7 +139,6 @@
                               
                                 <input type="radio" class="btn-check" name="options" id="EXCEL" autocomplete="off" />
                                 <label class="btn btn-light" for="EXCEL">EXCEL</label>
-    
                             </div>
                         </div>
                         <div class="d-flex justify-content-center" style="margin-top: 8vh;">

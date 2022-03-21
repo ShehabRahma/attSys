@@ -11,7 +11,7 @@ const passport      = require('passport');
 const flash         = require('express-flash')
 const session       = require('express-session')
 const initializePassport = require('./passport-config');
-const {homeGET, loginGET, adminPOST, Auth, NotAuth} = require('./Routes/routes')
+const {homeGET, loginGET, logoutGET, courseGET, flagsGET, adminPOST, Auth, NotAuth} = require('./Routes/routes')
 if(process.env.NODE_ENV !== 'production') require('dotenv').config()
 
 initializePassport(passport)
@@ -34,14 +34,20 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 
-app.get('/home', Auth, homeGET);
 app.get('/login', NotAuth, loginGET);
+app.get('/home', Auth, homeGET);
+app.get('/course/:id', Auth, courseGET);
+app.get('/logout', logoutGET);
+app.get('/flags', flagsGET);
+
 app.post('/admin', adminPOST);
 app.post('/login', passport.authenticate('local', {
     successRedirect:'/home',
     failureRedirect:'/login',
     failureFlash: true
 }));
+
+
 
 // app.get('/temp', async(req, res) => {
 

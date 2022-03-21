@@ -10,8 +10,21 @@ const homeGET = async (req, res) => {
     res.render("home", {title: "Home", user: req.user, courses})
 }
 
+const courseGET = async (req, res) => {
+    res.render("course", {title: req.params.id, id: req.params.id})
+}
+
 const loginGET = (req, res) => {
     res.render("login", {title: "Login"})
+}
+
+const logoutGET = (req, res) => {
+    req.logout();
+    res.redirect('/login');
+}
+
+const flagsGET = (req, res) => {
+    res.render("flags", {title: "Flags"})
 }
 
 const adminPOST = async (req, res) => {
@@ -42,4 +55,4 @@ const NotAuth = (req, res, next) => {
     else next();
 }
 
-module.exports = {homeGET, loginGET, adminPOST, Auth, NotAuth}
+module.exports = {homeGET, loginGET, logoutGET, courseGET, flagsGET, adminPOST, Auth, NotAuth}
