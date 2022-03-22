@@ -4,14 +4,32 @@ const Course        = require("../Models/courseModel")
 
 
 const homeGET = async (req, res) => {
-    const query = await Course.find({instructor_email: req.user.email}, {_id: 0, courseID: 1})
-    const courses = JSON.parse(JSON.stringify(query))   // must be done, cause the object received from mongo is type BSON
+    try {
+        const courses = await queryCourses(req.user.email); 
+        res.render("home", {title: "Home", user: req.user, courses, deniedAccess: false})       // deniedAccess: used for a condition related to courseGET rout
+    } catch (err) {
+        console.log(err)
+        res.send(err.message)      
+    }
 
-    res.render("home", {title: "Home", user: req.user, courses})
 }
 
 const courseGET = async (req, res) => {
-    res.render("course", {title: req.params.id, id: req.params.id})
+    try {
+        let source;
+        (req.query.searchCourse) ? source = req.query.searchCourse.toUpperCase(): source = req.params.id;     // To differentiate between searchbar(type: url query) and course-cards(type: req param)
+    
+        const courses = await queryCourses(req.user.email); 
+        const found = courses.some(course => course.courseID === source);           // check if the Dr teaches this requested course 
+    
+        if( found ) res.render("course", {title: source, id: source});
+        else res.render("home", {title: "Home", user: req.user, courses, deniedAccess: true, deniedCourse: source}); 
+    
+    } catch (err) {
+        console.log(err)
+        res.send(err.message)      
+
+    }    
 }
 
 const loginGET = (req, res) => {
@@ -39,20 +57,30 @@ const adminPOST = async (req, res) => {
 
     }catch (err){
         console.log(err)
-        res.send("Bad")
+        res.send(err.message)
     }
 }
 
 
 const Auth = (req, res, next) => {
     if(req.isAuthenticated()) next();
-
     else res.redirect('/login');
 }
 const NotAuth = (req, res, next) => {
     if(req.isAuthenticated()) res.redirect('/home');
-
     else next();
+}
+
+const queryCourses = async (userEmail) => {
+    try {
+        const query = await Course.find({instructor_email: userEmail}, {_id: 0, courseID: 1});
+        const courses = JSON.parse(JSON.stringify(query));      // must be done, cause the object received from mongo is type BSON
+        
+        return courses;
+    } catch (err) {
+        console.log(err.message)
+        return null;
+    }
 }
 
 module.exports = {homeGET, loginGET, logoutGET, courseGET, flagsGET, adminPOST, Auth, NotAuth}

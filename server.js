@@ -23,7 +23,7 @@ mongoose.connect(DB_LINK)
 app.set('view engine', 'ejs');
 app.use( express.static("static") );
 app.use(express.json());
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 app.use(flash())
 app.use(session({
     secret: process.env.SESSION_SECRETE,
@@ -34,13 +34,39 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 
+app.get('/', Auth, homeGET);
 app.get('/login', NotAuth, loginGET);
 app.get('/home', Auth, homeGET);
 app.get('/course/:id', Auth, courseGET);
+app.get('/course', Auth, courseGET);
 app.get('/logout', logoutGET);
 app.get('/flags', flagsGET);
 
-app.post('/admin', adminPOST);
+app.post('/admin', Auth, adminPOST);
+// ! add auth below later
+app.post('/quickRecord', async(req, res) => {
+    const courseID = req.body.courseID;
+    const stID = Number(req.body.stID);
+    const date = req.body.date;
+    const choice = req.body.choice;
+
+    const query = await Course.find({instructor_email: "akbar.alsaleh@gmail.com", courseID: courseID}, {_id: 0, students: 1});
+    const parsedQuery = JSON.parse(JSON.stringify(query));
+
+    if(parsedQuery.length === 0) res.send("You can't access this course");
+
+    const stExists = Object.values(parsedQuery[0].students).includes(stID);
+    if(!stExists) res.send("This student is not registered in this course");
+    else res.send([courseID, stID, date, choice])
+
+    // console.log(courseID)
+    // console.log(stID)
+    // console.log(date)
+    // console.log(choice)
+    
+
+    
+});
 app.post('/login', passport.authenticate('local', {
     successRedirect:'/home',
     failureRedirect:'/login',
@@ -50,10 +76,8 @@ app.post('/login', passport.authenticate('local', {
 
 
 // app.get('/temp', async(req, res) => {
-
-//     const queriedCourses = await Course.find({instructor_email: req.body.email})
-//     console.log(queriedCourses)
-//     res.sendStatus(200)
+//     console.log(req.query.id)
+//     res.send(req.query.id)
 // });
 
 
