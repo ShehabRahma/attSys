@@ -7,11 +7,12 @@ const dotenv        = require('dotenv').config({path : path.join(__dirname,'.env
 const DB_LINK       = process.env.DB_LINK
 const User          = require('./Models/userModel')
 const Course          = require('./Models/courseModel')
+const Room          = require('./Models/roomModel')
 const passport      = require('passport');
 const flash         = require('express-flash')
 const session       = require('express-session')
 const initializePassport = require('./passport-config');
-const {homeGET, loginGET, logoutGET, courseGET, flagsGET, adminPOST, Auth, NotAuth} = require('./Routes/routes')
+const {homeGET, loginGET, quickRecord, logoutGET, courseGET, flagsGET, adminPOST, Auth, NotAuth} = require('./Routes/routes')
 if(process.env.NODE_ENV !== 'production') require('dotenv').config()
 
 initializePassport(passport)
@@ -43,30 +44,7 @@ app.get('/logout', logoutGET);
 app.get('/flags', flagsGET);
 
 app.post('/admin', Auth, adminPOST);
-// ! add auth below later
-app.post('/quickRecord', async(req, res) => {
-    const courseID = req.body.courseID;
-    const stID = Number(req.body.stID);
-    const date = req.body.date;
-    const choice = req.body.choice;
-
-    const query = await Course.find({instructor_email: "akbar.alsaleh@gmail.com", courseID: courseID}, {_id: 0, students: 1});
-    const parsedQuery = JSON.parse(JSON.stringify(query));
-
-    if(parsedQuery.length === 0) res.send("You can't access this course");
-
-    const stExists = Object.values(parsedQuery[0].students).includes(stID);
-    if(!stExists) res.send("This student is not registered in this course");
-    else res.send([courseID, stID, date, choice])
-
-    // console.log(courseID)
-    // console.log(stID)
-    // console.log(date)
-    // console.log(choice)
-    
-
-    
-});
+app.post('/quickRecord', Auth, quickRecord);
 app.post('/login', passport.authenticate('local', {
     successRedirect:'/home',
     failureRedirect:'/login',
