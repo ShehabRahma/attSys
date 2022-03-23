@@ -12,7 +12,7 @@ const passport      = require('passport');
 const flash         = require('express-flash')
 const session       = require('express-session')
 const initializePassport = require('./passport-config');
-const {homeGET, loginGET, quickRecord, logoutGET, courseGET, flagsGET, adminPOST, Auth, NotAuth} = require('./Routes/routes')
+const {homeGET, loginGET, quickRecord, exportAtt, logoutGET, courseGET, flagsGET, adminPOST, Auth, NotAuth} = require('./routes')
 if(process.env.NODE_ENV !== 'production') require('dotenv').config()
 
 initializePassport(passport)
@@ -51,14 +51,18 @@ app.post('/login', passport.authenticate('local', {
     failureFlash: true
 }));
 
-
+// ! add Auth below
+app.post('/exportAll', exportAtt);
 
 // app.get('/temp', async(req, res) => {
 //     console.log(req.query.id)
 //     res.send(req.query.id)
 // });
 
-
+app.get('*', function(req, res){
+    res.render('404');
+});
+  
 app.listen(process.env.PORT || 3000, (req, res) => {
     console.log('Server is on port 3000')
 });

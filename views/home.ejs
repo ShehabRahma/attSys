@@ -57,7 +57,7 @@
                     </div>
                 <% }; %> 
     <% }; %> 
-    <section style="min-height: 100vh; margin-bottom: 15vh;">
+    <section style="min-height: 100vh; margin-bottom: 20vh;">
         <div class="container p-5">
             <div class="row">
                 <div class="col-md-9">
@@ -170,7 +170,7 @@
                     <h5 class="modal-title">Export All Attendance</h5>
                 </div>
                 <div class="modal-body">
-                    <form action="">
+                    <form method="POST" action="/exportAll">
                         <div class="my-2 fw-bold text-muted">
                             <label class="me-2" for="fromDate">From: </label>
                             <input type="date" id="fromDate" name="fromDate" required>
