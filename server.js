@@ -42,8 +42,7 @@ app.get('/course/:id', Auth, courseGET);
 app.get('/course', Auth, courseGET);
 app.get('/logout', logoutGET);
 app.get('/flags', flagsGET);
-// ! add Auth later
-app.get('/averageAtt/:id', averageAtt);
+app.get('/averageAtt/:id', Auth, averageAtt);
 
 app.post('/admin', Auth, adminPOST);
 app.post('/quickRecord', Auth, quickRecord);

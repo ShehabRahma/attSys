@@ -112,7 +112,7 @@ const exportAll = async (req, res) => {
                 const allDates      = Object.keys(studAtt);
                 const docFormat     = req.body.docFormat;
 
-                await properDate();
+                [from, to] = await properDate(allDates, from, to, days);
                 const selectedDates = allDates.slice(allDates.indexOf(from), allDates.indexOf(to) + 1);
 
                 const report = { Course: courseID, All:{}, Warning:{}, WF:{} };
@@ -120,48 +120,12 @@ const exportAll = async (req, res) => {
                 if (days.length == 2) { warning = 4; wf = 8; }
                 else { warning = 6; wf = 12; }
                 
-                
                 await getAttendance();
 
                 await writeToFile();
 
 
-                async function properDate(){
 
-                    if(allDates.includes(from) != true) {
-                        const checkFrom = new Date(from);
-        
-                        if (days.length == 2){      // MW
-                            while (! allDates.includes(checkFrom.toISOString().split("T")[0])) {
-                                checkFrom.setDate(checkFrom.getDate() + (((1 + 7 - checkFrom.getDay()) % 7) || 7));     // get next monday
-                            }
-                            
-                        }else{      // UTH
-                            while (! allDates.includes(checkFrom.toISOString().split("T")[0])) {
-                                checkFrom.setDate(checkFrom.getDate() + (((1 + 6 - checkFrom.getDay()) % 7) || 7));     // get next sunday
-                            }
-                        }
-        
-                        from = checkFrom.toISOString().split("T")[0];
-
-                    }
-                    if(! allDates.includes(to)) {
-                        const checkTo = new Date(to);
-        
-                        if (days.length == 2){      // MW
-                            while (! allDates.includes(checkTo.toISOString().split("T")[0])) {
-                                checkTo.setDate(checkTo.getDate() - (((4 + checkTo.getDay()) % 7) || 7));         // get previous wednesday
-                            }
-                            
-                        }else{      // UTH
-                            while (! allDates.includes(checkTo.toISOString().split("T")[0])) {
-                                checkTo.setDate(checkTo.getDate() - (((3 + checkTo.getDay()) % 7) || 7));         // get previous thursday
-                            }
-                        }
-        
-                        to = checkTo.toISOString().split("T")[0];
-                    }
-                }
                 async function getAttendance(){
                     students.forEach( student => {
                         report.All[student] = 0;
@@ -284,7 +248,7 @@ const exportSingle = async (req, res) => {
     const docFormat     = req.body.docFormat;
     
 
-    await properDate();
+    [from, to] = await properDate(allDates, from, to, days);
     const selectedDates = allDates.slice(allDates.indexOf(from), allDates.indexOf(to) + 1);
     
     const report = { Course: courseID, All:{}, Warning:{}, WF:{} };
@@ -310,44 +274,8 @@ const exportSingle = async (req, res) => {
 
     deleteFile(targetFile);
     
-    
 
-    async function properDate(){
 
-        if(allDates.includes(from) != true) {
-            const checkFrom = new Date(from);
-
-            if (days.length == 2){      // MW
-                while (! allDates.includes(checkFrom.toISOString().split("T")[0])) {
-                    checkFrom.setDate(checkFrom.getDate() + (((1 + 7 - checkFrom.getDay()) % 7) || 7));     // get next monday
-                }
-                
-            }else{      // UTH
-                while (! allDates.includes(checkFrom.toISOString().split("T")[0])) {
-                    checkFrom.setDate(checkFrom.getDate() + (((1 + 6 - checkFrom.getDay()) % 7) || 7));     // get next sunday
-                }
-            }
-
-            from = checkFrom.toISOString().split("T")[0];
-
-        }
-        if(! allDates.includes(to)) {
-            const checkTo = new Date(to);
-
-            if (days.length == 2){      // MW
-                while (! allDates.includes(checkTo.toISOString().split("T")[0])) {
-                    checkTo.setDate(checkTo.getDate() - (((4 + checkTo.getDay()) % 7) || 7));         // get previous wednesday
-                }
-                
-            }else{      // UTH
-                while (! allDates.includes(checkTo.toISOString().split("T")[0])) {
-                    checkTo.setDate(checkTo.getDate() - (((3 + checkTo.getDay()) % 7) || 7));         // get previous thursday
-                }
-            }
-
-            to = checkTo.toISOString().split("T")[0];
-        }
-    }
     async function getAttendance(){
         students.forEach( student => {
             report.All[student] = 0;
@@ -544,6 +472,44 @@ const queryCourses = async (condition, projection) => {
         console.log(err.message)
         return null;
     }
+}
+const properDate = async (allDates, from, to, days) => {
+
+    if(allDates.includes(from) != true) {
+        const checkFrom = new Date(from);
+
+        if (days.length == 2){      // MW
+            while (! allDates.includes(checkFrom.toISOString().split("T")[0])) {
+                checkFrom.setDate(checkFrom.getDate() + (((1 + 7 - checkFrom.getDay()) % 7) || 7));     // get next monday
+            }
+            
+        }else{      // UTH
+            while (! allDates.includes(checkFrom.toISOString().split("T")[0])) {
+                checkFrom.setDate(checkFrom.getDate() + (((1 + 6 - checkFrom.getDay()) % 7) || 7));     // get next sunday
+            }
+        }
+
+        from = checkFrom.toISOString().split("T")[0];
+
+    }
+    if(! allDates.includes(to)) {
+        const checkTo = new Date(to);
+
+        if (days.length == 2){      // MW
+            while (! allDates.includes(checkTo.toISOString().split("T")[0])) {
+                checkTo.setDate(checkTo.getDate() - (((4 + checkTo.getDay()) % 7) || 7));         // get previous wednesday
+            }
+            
+        }else{      // UTH
+            while (! allDates.includes(checkTo.toISOString().split("T")[0])) {
+                checkTo.setDate(checkTo.getDate() - (((3 + checkTo.getDay()) % 7) || 7));         // get previous thursday
+            }
+        }
+
+        to = checkTo.toISOString().split("T")[0];
+    }
+
+    return [from, to]
 }
 
 module.exports = {homeGET, loginGET, quickRecord, exportAll, exportSingle, averageAtt, logoutGET, courseGET, flagsGET, adminPOST, Auth, NotAuth}
