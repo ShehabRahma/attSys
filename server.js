@@ -12,7 +12,7 @@ const passport      = require('passport');
 const flash         = require('express-flash')
 const session       = require('express-session')
 const initializePassport = require('./passport-config');
-const {homeGET, loginGET, quickRecord, exportAll, exportSingle, logoutGET, courseGET, flagsGET, adminPOST, Auth, NotAuth} = require('./routes')
+const {homeGET, loginGET, quickRecord, exportAll, exportSingle, averageAtt, logoutGET, courseGET, flagsGET, adminPOST, Auth, NotAuth} = require('./routes')
 if(process.env.NODE_ENV !== 'production') require('dotenv').config()
 
 initializePassport(passport)
@@ -42,6 +42,8 @@ app.get('/course/:id', Auth, courseGET);
 app.get('/course', Auth, courseGET);
 app.get('/logout', logoutGET);
 app.get('/flags', flagsGET);
+// ! add Auth later
+app.get('/averageAtt/:id', averageAtt);
 
 app.post('/admin', Auth, adminPOST);
 app.post('/quickRecord', Auth, quickRecord);
@@ -50,14 +52,9 @@ app.post('/login', passport.authenticate('local', {
     failureRedirect:'/login',
     failureFlash: true
 }));
-
 app.post('/exportAll', Auth, exportAll);
 app.post('/exportSingle/:id', Auth, exportSingle);
-// app.post('/exportSingle/:id', Auth, (req, res) => {
-//         console.log(req.params.id)
-//         res.send(req.params.id)
-//     }
-// );
+
 
 // app.get('/temp', async(req, res) => {
 //     console.log(req.query.id)

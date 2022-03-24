@@ -423,6 +423,68 @@ const exportSingle = async (req, res) => {
 
 }
 
+// ! change email later
+const averageAtt = async (req, res) => {
+
+    var from            = req.query.fromDate;
+    var to              = req.query.toDate;
+    const courseID      = req.params.id;
+    const parsedQuery   = await queryCourses({instructor_email: 'akbar.alsaleh@gmail.com', courseID: courseID}, {_id: 0, students: 1, days:1, roomID: 1})
+    const numOfStu      = Object.keys(parsedQuery[0].students).length;
+    const studAtt       = JSON.parse(JSON.stringify(await Room.findById(parsedQuery[0].roomID, { _id: 0, studAtt: 1 }))).studAtt;
+    const days          = parsedQuery[0].days;
+    const allDates      = Object.keys(studAtt);
+
+    await properDate();
+    const selectedDates = allDates.slice(allDates.indexOf(from), allDates.indexOf(to) + 1);
+
+    let sum = 0;
+    let numOfLectures = selectedDates.length;
+    selectedDates.forEach( date => {
+        sum += (studAtt[date].length)/numOfStu;
+    })
+    const average = (sum/numOfLectures) * 100;
+    res.render("course", {title: courseID, id: courseID, message: true, messageContent: `From: [${from}] To: [${to}] = ${average}%`, messageTheme: 'info'});
+
+
+    async function properDate(){
+        if(allDates.includes(from) != true) {
+            const checkFrom = new Date(from);
+
+            if (days.length == 2){      // MW
+                while (! allDates.includes(checkFrom.toISOString().split("T")[0])) {
+                    checkFrom.setDate(checkFrom.getDate() + (((1 + 7 - checkFrom.getDay()) % 7) || 7));     // get next monday
+                }
+                
+            }else{      // UTH
+                while (! allDates.includes(checkFrom.toISOString().split("T")[0])) {
+                    checkFrom.setDate(checkFrom.getDate() + (((1 + 6 - checkFrom.getDay()) % 7) || 7));     // get next sunday
+                }
+            }
+
+            from = checkFrom.toISOString().split("T")[0];
+
+        }
+        if(! allDates.includes(to)) {
+            const checkTo = new Date(to);
+
+            if (days.length == 2){      // MW
+                while (! allDates.includes(checkTo.toISOString().split("T")[0])) {
+                    checkTo.setDate(checkTo.getDate() - (((4 + checkTo.getDay()) % 7) || 7));         // get previous wednesday
+                }
+                
+            }else{      // UTH
+                while (! allDates.includes(checkTo.toISOString().split("T")[0])) {
+                    checkTo.setDate(checkTo.getDate() - (((3 + checkTo.getDay()) % 7) || 7));         // get previous thursday
+                }
+            }
+
+            to = checkTo.toISOString().split("T")[0];
+        }
+    }
+
+}
+
 const courseGET = async (req, res) => {
     try {
         let source;
@@ -431,7 +493,7 @@ const courseGET = async (req, res) => {
         const courses = req.session.coursesQueried; 
         const found = courses.some(course => course.courseID === source);           // check if the Dr teaches this requested course 
     
-        if( found ) res.render("course", {title: source, id: source});
+        if( found ) res.render("course", {title: source, id: source, message: false});
         else res.render("home", {title: "Home", user: req.user, courses, message: true, messageContent: "You don't have access to this course: " + source, messageTheme: 'warning'}); 
     
     } catch (err) {
@@ -484,7 +546,7 @@ const queryCourses = async (condition, projection) => {
     }
 }
 
-module.exports = {homeGET, loginGET, quickRecord, exportAll, exportSingle, logoutGET, courseGET, flagsGET, adminPOST, Auth, NotAuth}
+module.exports = {homeGET, loginGET, quickRecord, exportAll, exportSingle, averageAtt, logoutGET, courseGET, flagsGET, adminPOST, Auth, NotAuth}
 
 
 // const del=new Promise((resolve,reject)=>{
