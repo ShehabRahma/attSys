@@ -4,6 +4,9 @@ const Course        = require("./Models/courseModel")
 const Room          = require('./Models/roomModel')
 const fs            = require('fs');
 const archiver      = require('archiver');
+const xl            = require('excel4node');
+const wb            = new xl.Workbook();
+const ws            = wb.addWorksheet('Worksheet Name');
 
 const loginGET = (req, res) => {
     res.render("login", {title: "Login"})
@@ -102,22 +105,21 @@ const exportAtt = async (req, res) => {
             const courses = req.session.coursesQueried;
             courses.forEach( async (course) => {
     
-                var from = req.body.fromDate;
-                var to = req.body.toDate;
-                const courseID = course.courseID;
-                const parsedQuery = await queryCourses({instructor_email: req.user.email, courseID: courseID}, {_id: 0, students: 1, days: 1, roomID: 1})
-                const students = Object.values(parsedQuery[0].students);
-                const shit = await Room.findById(parsedQuery[0].roomID, { _id: 0, studAtt: 1 });
-                const studAtt = JSON.parse(JSON.stringify(shit)).studAtt;
-                const days = parsedQuery[0].days;
-                const allDates = Object.keys(studAtt);      
-
-
+                var from            = req.body.fromDate;
+                var to              = req.body.toDate;
+                const courseID      = course.courseID;
+                const parsedQuery   = await queryCourses({instructor_email: req.user.email, courseID: courseID}, {_id: 0, students: 1, days: 1, roomID: 1})
+                const students      = Object.values(parsedQuery[0].students);
+                const shit          = await Room.findById(parsedQuery[0].roomID, { _id: 0, studAtt: 1 });
+                const studAtt       = JSON.parse(JSON.stringify(shit)).studAtt;
+                const days          = parsedQuery[0].days;
+                const allDates      = Object.keys(studAtt);
+                const docFormat        = req.body.docFormat;
 
                 await properDate();
                 const selectedDates = allDates.slice(allDates.indexOf(from), allDates.indexOf(to) + 1);
 
-                const report = { course: courseID, All:{}, Warning:{}, WF:{} };
+                const report = { Course: courseID, All:{}, Warning:{}, WF:{} };
                 let warning; let wf;
                 if (days.length == 2) { warning = 4; wf = 8; }
                 else { warning = 6; wf = 12; }
@@ -126,9 +128,6 @@ const exportAtt = async (req, res) => {
                 await getAttendance();
 
                 await writeToFile();
-
-
-
 
 
                 async function properDate(){
@@ -180,9 +179,58 @@ const exportAtt = async (req, res) => {
                     });
                 }
                 async function writeToFile(){
-                    fs.writeFile(`./attExport/${req.user.email}/${course.courseID}.json`, JSON.stringify(report), err => {
-                        if (err) throw err;
-                    });
+
+                    if(docFormat == "EXCEL") xl();
+                    else if (docFormat == "JSON") JSOON();
+                    else JSOON();
+
+                    function xl(){
+                        ws.cell(1, 1).string(courseID);
+                        ws.cell(1, 3).string(`From: ${from}`);
+                        ws.cell(1, 5).string(`To: ${to}`);
+    
+                        ws.cell(3, 1).string("All");
+                        ws.cell(4, 1).string("ID");
+                        ws.cell(4, 2).string("Absence");
+    
+                        ws.cell(3, 4).string("Warning");
+                        ws.cell(4, 4).string("ID");
+                        ws.cell(4, 5).string("Absence");
+    
+                        ws.cell(3, 7).string("WF");
+                        ws.cell(4, 7).string("ID");
+                        ws.cell(4, 8).string("Absence");
+    
+    
+                        const All_IDs = Object.keys(report.All);
+                        insertToSheet(All_IDs, 5, 1);
+                        const All_Abs = Object.values(report.All);
+                        insertToSheet(All_Abs, 5, 2);
+    
+                        const Warning_IDs = Object.keys(report.Warning);
+                        insertToSheet(Warning_IDs, 5, 4);
+                        const Warning_Abs = Object.values(report.Warning);
+                        insertToSheet(Warning_Abs, 5, 5);
+    
+                        const WF_IDs = Object.keys(report.WF);
+                        insertToSheet(WF_IDs, 5, 7);
+                        const WF_Abs = Object.values(report.WF);
+                        insertToSheet(WF_Abs, 5, 8);
+    
+                        async function insertToSheet(data, initRow, col){
+                            data.forEach( item => {
+                                ws.cell(initRow, col).number(Number(item))
+                                initRow++;
+                            })
+                        }
+    
+                        wb.write(`./attExport/${req.user.email}/${course.courseID}.xlsx`);
+                    }
+                    function JSOON(){
+                        fs.writeFile(`./attExport/${req.user.email}/${course.courseID}.json`, JSON.stringify(report), err => {
+                            if (err) throw err;
+                        });
+                    }
                 }
             })
 

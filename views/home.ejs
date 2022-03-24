@@ -56,8 +56,10 @@
                         <h6 class="fw-bold text-center"> <%= messageContent %> </h6>
                     </div>
                 <% }; %> 
-    <% }; %> 
+    <% }; %>    
+
     <section style="min-height: 100vh; margin-bottom: 20vh;">
+
         <div class="container p-5">
             <div class="row">
                 <div class="col-md-9">
@@ -182,10 +184,10 @@
                         <div class="my-3 fw-bold text-muted">
                             <label class="me-2" for="format">Format: </label>
                             <div class="btn-group" id="format">
-                                <input type="radio" class="btn-check" name="options" id="JSON" autocomplete="off" checked />
+                                <input type="radio" class="btn-check" name="docFormat" value="JSON" id="JSON" autocomplete="off" checked />
                                 <label class="btn btn-light" for="JSON">JSON</label>
                               
-                                <input type="radio" class="btn-check" name="options" id="EXCEL" autocomplete="off" />
+                                <input type="radio" class="btn-check" name="docFormat" value="EXCEL" id="EXCEL" autocomplete="off" />
                                 <label class="btn btn-light" for="EXCEL">EXCEL</label>
                             </div>
                         </div>
