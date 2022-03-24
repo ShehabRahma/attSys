@@ -65,91 +65,110 @@ const quickRecord = async(req, res) => {
     }     
 }
 
-// ! change email & courses to be dynamic
 const exportAtt = async (req, res) => {
     try {
-        // const courses = req.session.coursesQueried;
-        const courses = [{"courseID": "ITCE112-2"}, {"courseID": "ITCE112-1"}];
-        const total = []
-        let myPromise = new Promise(function(myResolve, myReject) {
-            // "Producing Code" (May take some time)
+
+        await doAll();
+        res.send('Hi');
+
+        async function doAll(){
             
-              myResolve(); // when successful
-              myReject();  // when error
-            });
-
-            
-        await courses.forEach( async (course) => {
-
-            let from = req.body.fromDate;
-            let to = req.body.toDate;
-            const courseID = course.courseID;
-            const parsedQuery = await queryCourses({instructor_email:"akbar.alsaleh@gmail.com", courseID: courseID}, {_id: 0, students: 1, days: 1, roomID: 1})
-            const students = Object.values(parsedQuery[0].students);
-            const studAtt = JSON.parse(JSON.stringify(await Room.findById(parsedQuery[0].roomID, { _id: 0, studAtt: 1 }))).studAtt;
-            const days = parsedQuery[0].days;
-            const allDates = Object.keys(studAtt);      
-            
-
-            if(! allDates.includes(from)) {
-                const checkFrom = new Date(from);
-
-                if (days.length == 2){      // MW
-                    while (! allDates.includes(checkFrom.toISOString().split("T")[0])) {
-                        checkFrom.setDate(checkFrom.getDate() + (((1 + 7 - checkFrom.getDay()) % 7) || 7));     // get next monday
-                    }
-                    
-                }else{      // UTH
-                    while (! allDates.includes(checkFrom.toISOString().split("T")[0])) {
-                        checkFrom.setDate(checkFrom.getDate() + (((1 + 6 - checkFrom.getDay()) % 6) || 6));     // get next sunday
-                    }
-                }
-
-                from = checkFrom.toISOString().split("T")[0];
-            }
-            if(! allDates.includes(to)) {
-                const checkTo = new Date(to);
-
-                if (days.length == 2){      // MW
-                    while (! allDates.includes(checkTo.toISOString().split("T")[0])) {
-                        checkTo.setDate(checkTo.getDate() - (((1 + 7 - checkTo.getDay()) % 7) || 7));     // get next monday
-                    }
-                    
-                }else{      // UTH
-                    while (! allDates.includes(checkTo.toISOString().split("T")[0])) {
-                        checkTo.setDate(checkTo.getDate() - (((1 + 6 - checkTo.getDay()) % 6) || 6));     // get next sunday
-                    }
-                }
-
-                to = checkTo.toISOString().split("T")[0];
-            }
-
-        
-            const selectedDates = allDates.slice(allDates.indexOf(from), allDates.indexOf(to) + 1);
-            const report = { All:{}, Warning:{}, WF:{} };
+            const courses = req.session.coursesQueried;
+            courses.forEach( async (course) => {
     
-            let warning; let wf;
-            if (days.length == 2) { warning = 4; wf = 8; }
-            else { warning = 6; wf = 12; }
-            
-            students.forEach( student => {
-                report.All[student] = 0;
+                var from = req.body.fromDate;
+                var to = req.body.toDate;
+                const courseID = course.courseID;
+                const parsedQuery = await queryCourses({instructor_email: req.user.email, courseID: courseID}, {_id: 0, students: 1, days: 1, roomID: 1})
+                const students = Object.values(parsedQuery[0].students);
+                const shit = await Room.findById(parsedQuery[0].roomID, { _id: 0, studAtt: 1 });
+                const studAtt = JSON.parse(JSON.stringify(shit)).studAtt;
+                const days = parsedQuery[0].days;
+                const allDates = Object.keys(studAtt);      
+
+
+
+                await properDate();
+                const selectedDates = allDates.slice(allDates.indexOf(from), allDates.indexOf(to) + 1);
+
+                const report = { course: courseID, All:{}, Warning:{}, WF:{} };
+                let warning; let wf;
+                if (days.length == 2) { warning = 4; wf = 8; }
+                else { warning = 6; wf = 12; }
                 
-                selectedDates.forEach( date => {
-                    if(! studAtt[date].includes(student)) { report.All[student] = report.All[student] + 1; }
-                })
-    
-                if(report.All[student] >= wf) { report.WF[student] = report.All[student]; }
-                else if(report.All[student] >= warning) { report.Warning[student] = report.All[student]; }
-            });
+                
+                await getAttendance();
 
-            // console.log(report)
-            total.push(report)
-        })
+                await writeToFile();
 
-        console.log(total.length)
 
-        res.send('Hi')
+
+
+
+
+                async function properDate(){
+
+                    if(allDates.includes(from) != true) {
+                        const checkFrom = new Date(from);
+        
+                        if (days.length == 2){      // MW
+                            while (! allDates.includes(checkFrom.toISOString().split("T")[0])) {
+                                checkFrom.setDate(checkFrom.getDate() + (((1 + 7 - checkFrom.getDay()) % 7) || 7));     // get next monday
+                                console.log('wooo')
+                            }
+                            
+                        }else{      // UTH
+                            while (! allDates.includes(checkFrom.toISOString().split("T")[0])) {
+                                checkFrom.setDate(checkFrom.getDate() + (((1 + 6 - checkFrom.getDay()) % 7) || 7));     // get next sunday
+                                console.log('wooo')
+                            }
+                        }
+        
+                        from = checkFrom.toISOString().split("T")[0];
+
+                    }
+                    if(! allDates.includes(to)) {
+                        const checkTo = new Date(to);
+        
+                        if (days.length == 2){      // MW
+                            while (! allDates.includes(checkTo.toISOString().split("T")[0])) {
+                                checkTo.setDate(checkTo.getDate() - (((4 + checkTo.getDay()) % 7) || 7));         // get previous wednesday
+                                console.log('wooo')
+                            }
+                            
+                        }else{      // UTH
+                            while (! allDates.includes(checkTo.toISOString().split("T")[0])) {
+                                checkTo.setDate(checkTo.getDate() - (((3 + checkTo.getDay()) % 7) || 7));         // get previous thursday
+                                console.log('wooo')
+                            }
+                        }
+        
+                        to = checkTo.toISOString().split("T")[0];
+                    }
+                }
+
+                async function getAttendance(){
+                    students.forEach( student => {
+                        report.All[student] = 0;
+                        
+                        selectedDates.forEach( date => {
+                            if(! studAtt[date].includes(student)) { report.All[student] = report.All[student] + 1; }
+                        })
+            
+                        if(report.All[student] >= wf) { report.WF[student] = report.All[student]; }
+                        else if(report.All[student] >= warning) { report.Warning[student] = report.All[student]; }
+                    });
+                }
+
+                async function writeToFile(){
+                    fs.writeFile(`./attExport/${course.courseID}.json`, JSON.stringify(report), err => {
+                        if (err) throw err;
+                        console.log('Done!');
+                    });
+                }
+            })
+        }
+
     } catch (err) {
         console.log(err);
         res.send(err.message);
@@ -222,10 +241,11 @@ module.exports = {homeGET, loginGET, quickRecord, exportAtt, logoutGET, courseGE
 
 // const del=new Promise((resolve,reject)=>{
 //     setTimeout(()=>{
-//         resolve(fs.writeFile(`./attExport/${courseID}.json`, JSON.stringify(report), err => {
+//         fs.writeFile(`./attExport/${courseID}.json`, JSON.stringify(report), err => {
 //             if (err) throw err;
-//         }));
+//         });
 //     }, 5000)
+    //
 // })
 
 // Promise.all(del).then(res=>{console.log("res:=",res)})
