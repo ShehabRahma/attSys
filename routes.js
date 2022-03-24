@@ -3,6 +3,7 @@ const User          = require('./Models/userModel')
 const Course        = require("./Models/courseModel")
 const Room          = require('./Models/roomModel')
 const fs            = require('fs');
+const archiver      = require('archiver');
 
 const loginGET = (req, res) => {
     res.render("login", {title: "Login"})
@@ -68,11 +69,36 @@ const quickRecord = async(req, res) => {
 const exportAtt = async (req, res) => {
     try {
 
-        await doAll();
-        res.send('Hi');
+        const targetDir = `./attExport/${req.user.email}`;
+        const targetZip = `./attExport/${req.user.email}.zip`;
+        
+        await createDir(targetDir);
+        await new Promise(resolve => setTimeout(resolve, 500));     // wait
 
-        async function doAll(){
-            
+        await insertFiles();
+        await new Promise(resolve => setTimeout(resolve, 500));     // wait
+
+        await zipDir(targetDir, targetZip);
+        await new Promise(resolve => setTimeout(resolve, 500));     // wait
+        
+        res.download(targetZip);
+        await new Promise(resolve => setTimeout(resolve, 500));     // wait
+
+        await deleteDir(targetZip, false);
+        await new Promise(resolve => setTimeout(resolve, 500));     // wait
+
+        await deleteDir(targetDir, true);
+
+        
+
+        async function createDir(path){
+            fs.mkdir(path, (err) => {
+                if (err) { return console.error(err);}
+                else { console.log('Dir created');}
+            });
+        }
+        async function insertFiles(){
+
             const courses = req.session.coursesQueried;
             courses.forEach( async (course) => {
     
@@ -105,7 +131,6 @@ const exportAtt = async (req, res) => {
 
 
 
-
                 async function properDate(){
 
                     if(allDates.includes(from) != true) {
@@ -114,13 +139,11 @@ const exportAtt = async (req, res) => {
                         if (days.length == 2){      // MW
                             while (! allDates.includes(checkFrom.toISOString().split("T")[0])) {
                                 checkFrom.setDate(checkFrom.getDate() + (((1 + 7 - checkFrom.getDay()) % 7) || 7));     // get next monday
-                                console.log('wooo')
                             }
                             
                         }else{      // UTH
                             while (! allDates.includes(checkFrom.toISOString().split("T")[0])) {
                                 checkFrom.setDate(checkFrom.getDate() + (((1 + 6 - checkFrom.getDay()) % 7) || 7));     // get next sunday
-                                console.log('wooo')
                             }
                         }
         
@@ -133,20 +156,17 @@ const exportAtt = async (req, res) => {
                         if (days.length == 2){      // MW
                             while (! allDates.includes(checkTo.toISOString().split("T")[0])) {
                                 checkTo.setDate(checkTo.getDate() - (((4 + checkTo.getDay()) % 7) || 7));         // get previous wednesday
-                                console.log('wooo')
                             }
                             
                         }else{      // UTH
                             while (! allDates.includes(checkTo.toISOString().split("T")[0])) {
                                 checkTo.setDate(checkTo.getDate() - (((3 + checkTo.getDay()) % 7) || 7));         // get previous thursday
-                                console.log('wooo')
                             }
                         }
         
                         to = checkTo.toISOString().split("T")[0];
                     }
                 }
-
                 async function getAttendance(){
                     students.forEach( student => {
                         report.All[student] = 0;
@@ -159,13 +179,35 @@ const exportAtt = async (req, res) => {
                         else if(report.All[student] >= warning) { report.Warning[student] = report.All[student]; }
                     });
                 }
-
                 async function writeToFile(){
-                    fs.writeFile(`./attExport/${course.courseID}.json`, JSON.stringify(report), err => {
+                    fs.writeFile(`./attExport/${req.user.email}/${course.courseID}.json`, JSON.stringify(report), err => {
                         if (err) throw err;
-                        console.log('Done!');
                     });
                 }
+            })
+
+            console.log('Files inserted')
+        }
+        function zipDir(sourceDir, outPath) {
+            const archive = archiver('zip', { zlib: { level: 9 }});
+            const stream = fs.createWriteStream(outPath);
+          
+            return new Promise((resolve, reject) => {
+              archive
+                .directory(sourceDir, false)
+                .on('error', err => reject(err))
+                .pipe(stream)
+              ;
+          
+              stream.on('close', () => resolve());
+              archive.finalize();
+              console.log('File zipped')
+            });
+        }
+        async function deleteDir(path, recurChoice){
+            fs.rm(path, { recursive: recurChoice }, err => {
+                if(err) {console.error(err.message);}
+                else { console.log("Dir deleted");}
             })
         }
 
