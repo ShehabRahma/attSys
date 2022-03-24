@@ -5,8 +5,6 @@ const Room          = require('./Models/roomModel')
 const fs            = require('fs');
 const archiver      = require('archiver');
 const xl            = require('excel4node');
-const wb            = new xl.Workbook();
-const ws            = wb.addWorksheet('Worksheet Name');
 
 const loginGET = (req, res) => {
     res.render("login", {title: "Login"})
@@ -180,11 +178,13 @@ const exportAtt = async (req, res) => {
                 }
                 async function writeToFile(){
 
-                    if(docFormat == "EXCEL") xl();
+                    if(docFormat == "EXCEL") EXCEL();
                     else if (docFormat == "JSON") JSOON();
-                    else JSOON();
 
-                    function xl(){
+                    function EXCEL(){
+                        const wb = new xl.Workbook();
+                        const ws = wb.addWorksheet('Worksheet Name');
+
                         ws.cell(1, 1).string(courseID);
                         ws.cell(1, 3).string(`From: ${from}`);
                         ws.cell(1, 5).string(`To: ${to}`);
@@ -206,17 +206,23 @@ const exportAtt = async (req, res) => {
                         insertToSheet(All_IDs, 5, 1);
                         const All_Abs = Object.values(report.All);
                         insertToSheet(All_Abs, 5, 2);
-    
+                        
                         const Warning_IDs = Object.keys(report.Warning);
-                        insertToSheet(Warning_IDs, 5, 4);
-                        const Warning_Abs = Object.values(report.Warning);
-                        insertToSheet(Warning_Abs, 5, 5);
+                        if(Warning_IDs.length > 0){
+                            insertToSheet(Warning_IDs, 5, 4);
+                            const Warning_Abs = Object.values(report.Warning);
+                            insertToSheet(Warning_Abs, 5, 5);
+                        }
     
                         const WF_IDs = Object.keys(report.WF);
-                        insertToSheet(WF_IDs, 5, 7);
-                        const WF_Abs = Object.values(report.WF);
-                        insertToSheet(WF_Abs, 5, 8);
+                        if(WF_IDs.length > 0){
+                            insertToSheet(WF_IDs, 5, 7);
+                            const WF_Abs = Object.values(report.WF);
+                            insertToSheet(WF_Abs, 5, 8);
+                        }
     
+
+
                         async function insertToSheet(data, initRow, col){
                             data.forEach( item => {
                                 ws.cell(initRow, col).number(Number(item))

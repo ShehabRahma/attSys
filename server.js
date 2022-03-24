@@ -52,7 +52,7 @@ app.post('/login', passport.authenticate('local', {
 }));
 
 // ! add Auth below
-app.post('/exportAll', exportAtt);
+app.post('/exportAll', Auth, exportAtt);
 
 // app.get('/temp', async(req, res) => {
 //     console.log(req.query.id)
