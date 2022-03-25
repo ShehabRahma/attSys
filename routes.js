@@ -47,20 +47,13 @@ const quickRecord = async(req, res) => {
             if(!stExists){
                 res.render("home", {title: "Home", user: req.user, courses: req.session.coursesQueried, message: true, messageContent: "This student: "+ stID + " is not registered in this course: " + courseID, messageTheme: 'warning'}); 
             } else{
-                const week = "UMTWHFS";
-                const checkDay = new Date(date).getDay();
 
                 const studAtt = JSON.parse(JSON.stringify(await Room.findById(parsedQuery[0].roomID, { _id: 0, studAtt: 1 }))).studAtt;
                 const allDates = Object.keys(studAtt);
+
                 if(! allDates.includes(date)){
                     res.render("home", {title: "Home", user: req.user, courses: req.session.coursesQueried, message: true, messageContent: "There is no lecture in this chosen date: " + date, messageTheme: 'warning'}); 
-                }
-
-
-
-                if(! parsedQuery[0].days.includes(week[checkDay])){
-                    res.render("home", {title: "Home", user: req.user, courses: req.session.coursesQueried, message: true, messageContent: "There is no lecture in this chosen date: " + date, messageTheme: 'warning'}); 
-                } else {
+                }else {
                     const nestedPath = 'studAtt.' + date
                     if(choice === 'Attendant') await Room.findByIdAndUpdate(parsedQuery[0].roomID, { $addToSet: { [nestedPath] : stID } });
                     else{
@@ -400,25 +393,42 @@ const recordCourseAtt = async (req, res) => {
     
     const courseID = req.params.courseID;
     const stuList = req.body.stuList;
-    const parsedQuery = await queryCourses({instructor_email: req.user.email, courseID: courseID}, {_id: 0, students: 1, days: 1, roomID: 1})
-    const stuCourseList = Object.values(parsedQuery[0].students);
     const date = req.body.date;
     const choice = req.body.choice;
-    const week = "UMTWHFS";
-    const checkDay = new Date(date).getDay();
-    
-    if(! parsedQuery[0].days.includes(week[checkDay])){
-        res.render("home", {title: "Home", user: req.user, courses: req.session.coursesQueried, message: true, messageContent: "There is no lecture in this chosen date: " + date, messageTheme: 'warning'}); 
+    const parsedQuery = await queryCourses({instructor_email: req.user.email, courseID: courseID}, {_id: 0, students: 1, days: 1, roomID: 1})
+    const courseStuList = Object.values(parsedQuery[0].students);
+    const studAtt = JSON.parse(JSON.stringify(await Room.findById(parsedQuery[0].roomID, { _id: 0, studAtt: 1 }))).studAtt;
+    const allDates = Object.keys(studAtt);
+    const separated = stuList.split(" ");
+    const IDs = []
+    const refused = []
+
+    if(! allDates.includes(date)){
+        res.render("course", {title: courseID, id: courseID, message: true, messageContent: "There is no lecture in this chosen date: " + date, messageTheme: 'warning'}); 
+    }else{
+
+        separated.forEach( id => {
+            IDs.push(Number(id));
+        })
+
+        if(choice === 'Attendant'){
+
+        }else if(choice === 'Absent'){
+
+        }
+        IDs.forEach( id => {
+            if(id != null){
+                if(courseStuList.includes(id)){
+                    
+                }else{
+                    refused.push(id)
+                }
+            }
+        })
+
     }
 
 
-    // const stuList = req.body.stuList;
-    // const separated = stuList.split(" ");
-    // const IDs = []
-
-    // separated.forEach( id => {
-    //     IDs.push(Number(id));
-    // })
 
     // res.send([arr, arr2])
 }
