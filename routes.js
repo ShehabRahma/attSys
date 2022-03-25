@@ -6,6 +6,7 @@ const fs            = require('fs');
 const archiver      = require('archiver');
 const xl            = require('excel4node');
 
+
 const loginGET = (req, res) => {
     res.render("login", {title: "Login"})
 }
@@ -15,14 +16,16 @@ const logoutGET = (req, res) => {
     res.redirect('/login');
 }
 
+
+// home page
 const homeGET = async (req, res) => {
     try {
-        if(req.session.coursesQueried){
-            res.render("home", {title: "Home", user: req.user, courses: req.session.coursesQueried, message: false})       // deniedAccess: used for a condition related to courseGET rout
+        if(req.session.coursesQueried){                                                                         // check if courses list were already stored in session variable (already logged in)
+            res.render("home", {title: "Home", user: req.user, courses: req.session.coursesQueried, message: false})       
         }else{
-            const courses = await queryCourses({instructor_email: req.user.email}, {_id: 0, courseID: 1}); 
-            req.session.coursesQueried = courses;
-            res.render("home", {title: "Home", user: req.user, courses, message: false})       // deniedAccess: used for a condition related to courseGET rout
+            const courses = await queryCourses({instructor_email: req.user.email}, {_id: 0, courseID: 1});      // query courses list for this user
+            req.session.coursesQueried = courses;                                                               // save courses in session variable (to be used globally in other routes)
+            res.render("home", {title: "Home", user: req.user, courses, message: false})       
         }
     } catch (err) {
         console.log(err)
@@ -30,7 +33,7 @@ const homeGET = async (req, res) => {
     }
 
 }
-
+// inside home page
 const quickRecord = async(req, res) => {
     try {
         const courseID = req.body.courseID;
@@ -38,20 +41,21 @@ const quickRecord = async(req, res) => {
         const date = req.body.date;
         const choice = req.body.choice;
     
-        const parsedQuery = await queryCourses({instructor_email: req.user.email, courseID: courseID}, {_id: 0, students: 1, days: 1, roomID: 1})
+        const parsedQuery = await queryCourses({instructor_email: req.user.email, courseID: courseID},
+             {_id: 0, students: 1, days: 1, roomID: 1})       
     
-        if(parsedQuery.length === 0) {  // check if Dr has access to this course
+        if(parsedQuery.length === 0) {                                                      // check if Dr has access to this course
             res.render("home", {title: "Home", user: req.user, courses: req.session.coursesQueried, message: true, messageContent: "You don't have access to this course: " + courseID, messageTheme: 'warning'}); 
         }else{
             const stExists = Object.values(parsedQuery[0].students).includes(stID);
-            if(!stExists){
+            if(!stExists){                                                                  // check if the ID exists in the list of course students
                 res.render("home", {title: "Home", user: req.user, courses: req.session.coursesQueried, message: true, messageContent: "This student: "+ stID + " is not registered in this course: " + courseID, messageTheme: 'warning'}); 
             } else{
 
                 const studAtt = JSON.parse(JSON.stringify(await Room.findById(parsedQuery[0].roomID, { _id: 0, studAtt: 1 }))).studAtt;
                 const allDates = Object.keys(studAtt);
 
-                if(! allDates.includes(date)){
+                if(! allDates.includes(date)){                                              // check if the chosen date exists in the database
                     res.render("home", {title: "Home", user: req.user, courses: req.session.coursesQueried, message: true, messageContent: "There is no lecture in this chosen date: " + date, messageTheme: 'warning'}); 
                 }else {
                     const nestedPath = 'studAtt.' + date
@@ -68,7 +72,7 @@ const quickRecord = async(req, res) => {
         res.send(err.message)
     }     
 }
-
+// inside home page
 const exportAll = async (req, res) => {
     try {
 
@@ -235,6 +239,27 @@ const exportAll = async (req, res) => {
     }  
 }
 
+
+// course page
+const courseGET = async (req, res) => {
+    try {
+        let source;
+        (req.query.searchCourse) ? source = req.query.searchCourse.toUpperCase(): source = req.params.id;     // To differentiate between searchbar(type: url query) and course-cards(type: req param)
+    
+        const courses = req.session.coursesQueried; 
+        const found = courses.some(course => course.courseID === source);           // check if the Dr teaches this requested course 
+    
+        if( found ) {res.render("course", {title: source, id: source, message: false});}
+        else {res.render("home", {title: "Home", user: req.user, courses, message: true,
+            messageContent: "You don't have access to this course: " + source, messageTheme: 'warning'});} 
+    
+    } catch (err) {
+        console.log(err)
+        res.send(err.message)      
+
+    }    
+}
+// inside course page
 const exportSingle = async (req, res) => {
 
     try {
@@ -251,10 +276,10 @@ const exportSingle = async (req, res) => {
         const docFormat     = req.body.docFormat;
         
     
-        [from, to] = await properDate(allDates, from, to, days);
+        [from, to]          = await properDate(allDates, from, to, days);
         const selectedDates = allDates.slice(allDates.indexOf(from), allDates.indexOf(to) + 1);
         
-        const report = { Course: courseID, All:{}, Warning:{}, WF:{} };
+        const report        = { Course: courseID, All:{}, Warning:{}, WF:{} };
         let warning; let wf;
         if (days.length == 2) { warning = 4; wf = 8; }
         else { warning = 6; wf = 12; }
@@ -269,6 +294,7 @@ const exportSingle = async (req, res) => {
             targetFile = `${targetDir}/${fileName}.json`; 
             await JSOON(targetFile);
         }
+
         console.log('File written'); 
         await new Promise(resolve => setTimeout(resolve, 500));     // wait
     
@@ -358,7 +384,7 @@ const exportSingle = async (req, res) => {
     }
    
 }
-
+// inside course page
 const averageAtt = async (req, res) => {
 
     try {
@@ -371,6 +397,7 @@ const averageAtt = async (req, res) => {
         const days          = parsedQuery[0].days;
         const allDates      = Object.keys(studAtt);
     
+
         [from, to] = await properDate(allDates, from, to, days);
         const selectedDates = allDates.slice(allDates.indexOf(from), allDates.indexOf(to) + 1);
     
@@ -388,68 +415,94 @@ const averageAtt = async (req, res) => {
     }
 
 }
-
+// inside course page
 const recordCourseAtt = async (req, res) => {
     
-    const courseID = req.params.courseID;
-    const stuList = req.body.stuList;
-    const date = req.body.date;
-    const choice = req.body.choice;
-    const parsedQuery = await queryCourses({instructor_email: req.user.email, courseID: courseID}, {_id: 0, students: 1, days: 1, roomID: 1})
-    const courseStuList = Object.values(parsedQuery[0].students);
-    const studAtt = JSON.parse(JSON.stringify(await Room.findById(parsedQuery[0].roomID, { _id: 0, studAtt: 1 }))).studAtt;
-    const allDates = Object.keys(studAtt);
-    const separated = stuList.split(" ");
-    const IDs = []
-    const refused = []
+    try {
+        const courseID      = req.params.courseID;
+        const stuList       = req.body.stuList;
+        const date          = req.body.date;
+        const choice        = req.body.choice;
+        const parsedQuery   = await queryCourses({instructor_email: req.user.email, courseID: courseID}, {_id: 0, students: 1, days: 1, roomID: 1})
+        const courseStuList = Object.values(parsedQuery[0].students);
+        const studAtt       = JSON.parse(JSON.stringify(await Room.findById(parsedQuery[0].roomID, { _id: 0, studAtt: 1 }))).studAtt;
+        const allDates      = Object.keys(studAtt);
+        const separated     = stuList.split(" ");
+        const IDs           = []
+        const refused       = []
+    
+        
 
-    if(! allDates.includes(date)){
-        res.render("course", {title: courseID, id: courseID, message: true, messageContent: "There is no lecture in this chosen date: " + date, messageTheme: 'warning'}); 
-    }else{
+        if(! allDates.includes(date)){                              // check if chosen date exists in the database
+            res.render("course", {title: courseID, id: courseID, message: true,
+                messageContent: "There is no lecture in this chosen date: " + date, messageTheme: 'warning'}); 
+        }else{
+            
+            const nestedPath = 'studAtt.' + date
+            
+            if(stuList.trim().toLowerCase() == 'all'){              // for select all action on course students
+                if(choice === 'Attendant'){
+                    await Room.findByIdAndUpdate(parsedQuery[0].roomID, { $addToSet: { [nestedPath] : {$each: courseStuList} }});
+                }else if(choice === 'Absent'){
+                    await Room.findByIdAndUpdate(parsedQuery[0].roomID, { $pullAll: { [nestedPath] : courseStuList }});
+                }
+                res.render("course", {title: courseID, id: courseID, message: true,
+                    messageContent: "Students recorded successfully!", messageTheme: "success"});
 
-        separated.forEach( id => {
-            IDs.push(Number(id));
-        })
 
-        if(choice === 'Attendant'){
-
-        }else if(choice === 'Absent'){
-
-        }
-        IDs.forEach( id => {
-            if(id != null){
-                if(courseStuList.includes(id)){
-                    
+            }else{
+                separated.forEach( id => {
+                    IDs.push(Number(id));                           // anything not a number will be pushed as = null
+                })
+                            
+                await recordAtt();
+                if(refused.length > 0){                             // if user entered IDs which are not in the course student list. (works as well on chars & symbols entered) 
+                    res.render("course", {title: courseID, id: courseID, message: true,
+                        messageContent: `recorded successfully except these students (Not registered in this course): ${refused}`,
+                        messageTheme: "warning"});
                 }else{
-                    refused.push(id)
+                    res.render("course", {title: courseID, id: courseID, message: true,
+                        messageContent: "Students recorded successfully!", messageTheme: "success"});
+                }
+                
+
+
+                
+                async function recordAtt(){
+                    if(choice === 'Attendant'){
+                        IDs.forEach( async (id) => {
+                            if(id != null){                             // if id is actually a number (like mentioned above)
+                                if(courseStuList.includes(id)){         // if the student id is actually registered in the course
+                                    await Room.findByIdAndUpdate(parsedQuery[0].roomID, { $addToSet: { [nestedPath] : id } });
+                                }else{
+                                    refused.push(id)
+                                }
+                            }
+                        })
+                    }else if(choice === 'Absent'){
+                        IDs.forEach( async (id) => {
+                            if(id != null){                             // if id is actually a number (like mentioned above)
+                                if(courseStuList.includes(id)){         // if the student id is actually registered in the course
+                                    await Room.findByIdAndUpdate(parsedQuery[0].roomID, { $pull: { [nestedPath] : id } });
+                                }else{
+                                    refused.push(id)
+                                }
+                            }
+                        })
+                    }
                 }
             }
-        })
 
+        }
+
+    } catch (err) {
+        console.log(err);
+        res.send(err.message);
     }
 
 
-
-    // res.send([arr, arr2])
 }
 
-const courseGET = async (req, res) => {
-    try {
-        let source;
-        (req.query.searchCourse) ? source = req.query.searchCourse.toUpperCase(): source = req.params.id;     // To differentiate between searchbar(type: url query) and course-cards(type: req param)
-    
-        const courses = req.session.coursesQueried; 
-        const found = courses.some(course => course.courseID === source);           // check if the Dr teaches this requested course 
-    
-        if( found ) res.render("course", {title: source, id: source, message: false});
-        else res.render("home", {title: "Home", user: req.user, courses, message: true, messageContent: "You don't have access to this course: " + source, messageTheme: 'warning'}); 
-    
-    } catch (err) {
-        console.log(err)
-        res.send(err.message)      
-
-    }    
-}
 
 
 const flagsGET = (req, res) => {
@@ -473,11 +526,11 @@ const adminPOST = async (req, res) => {
 }
 
 
-const Auth = (req, res, next) => {
+const Auth = (req, res, next) => {                              // similar to isLoggedIn 
     if(req.isAuthenticated()) next();
     else res.redirect('/login');
 }
-const NotAuth = (req, res, next) => {
+const NotAuth = (req, res, next) => {                           // used on login page (redirect user to home if already logged) 
     if(req.isAuthenticated()) res.redirect('/home');
     else next();
 }
@@ -493,7 +546,10 @@ const queryCourses = async (condition, projection) => {
         return null;
     }
 }
-const properDate = async (allDates, from, to, days) => {
+// check if user selected dates exists in db, if not: 
+// (from date = move week forward until find a [monday(MW)/sunday(UTH)] that exists in db) 
+// (to date = move week backward until find a [wednesday(MW)/thursday(UTH)] that exists in db) 
+const properDate = async (allDates, from, to, days) => {        
 
     if(allDates.includes(from) != true) {
         const checkFrom = new Date(from);
@@ -533,15 +589,3 @@ const properDate = async (allDates, from, to, days) => {
 }
 
 module.exports = {homeGET, loginGET, quickRecord, exportAll, exportSingle, averageAtt, recordCourseAtt, logoutGET, courseGET, flagsGET, adminPOST, Auth, NotAuth}
-
-
-// const del=new Promise((resolve,reject)=>{
-//     setTimeout(()=>{
-//         fs.writeFile(`./attExport/${courseID}.json`, JSON.stringify(report), err => {
-//             if (err) throw err;
-//         });
-//     }, 5000)
-    //
-// })
-
-// Promise.all(del).then(res=>{console.log("res:=",res)})
