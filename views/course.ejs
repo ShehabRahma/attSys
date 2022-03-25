@@ -9,7 +9,7 @@
         }
         hr{
             border-top: 3px solid;
-            width: 10%;
+            width: 5%;
             margin-left: auto;
             margin-right: auto;
         }
@@ -84,7 +84,6 @@
                 <div class="col">
                     <div class="d-flex justify-content-center">
                         <button class="btn btn-lg options text-light mx-4" data-mdb-toggle="modal" data-mdb-target="#recordAttModal">Record Attendance</button>                    
-                        <button class="btn btn-lg options text-light mx-4" data-mdb-toggle="modal" data-mdb-target="#studentAbsModal">Student Absence</button>                    
                         <button class="btn btn-lg options text-light mx-4" data-mdb-toggle="modal" data-mdb-target="#averageAttModal">Average Attendance</button>                    
                         <button class="btn btn-lg options text-light mx-4" data-mdb-toggle="modal" data-mdb-target="#exportAttModal">Export Attendance</button>
                     </div>
@@ -101,7 +100,7 @@
             
             <hr>
 
-            <div class="row row-cols-3 mt-4">
+            <div class="row row-cols-3 mt-5">
                 <div class="col my-3"><button class="btn btn-lg d-block mx-auto">Hii</button></div>
                 <div class="col my-3"><button class="btn btn-lg d-block mx-auto">Hii</button></div>
                 <div class="col my-3"><button class="btn btn-lg d-block mx-auto">Hii</button></div>
@@ -119,46 +118,27 @@
                     <h5 class="modal-title">Record Attendance</h5>
                 </div>
                 <div class="modal-body">
-                    <form action="">
+                    <% const recordCourseAtt = `/recordCourseAtt/${id}` %> 
+                    <form method="POST" action=<%= recordCourseAtt %> >
                         <div>
                             <label class="form-label" for="stuList">ID's List: </label>
-                            <textarea class="form-control" id="stuList" name="stuList" rows="5" placeholder='Ex: 20186030 20185068 ... write "All" to select all'></textarea>
+                            <textarea class="form-control" id="stuList" name="stuList" rows="5" placeholder='Ex: 20186030 20185068 ..... write "All" to select the whole section.'></textarea>
                           </div>
                         <div class="d-flex justify-content-center mt-3">
                             <input type="date" id="date" name="date" required>
                         </div>
                         <div class="d-flex justify-content-center mt-5">
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="quickRadio" id="Attendant" value="Attendant" checked/>
+                                <input class="form-check-input" type="radio" name="choice" id="Attendant" value="Attendant" checked/>
                                 <label class="form-check-label" for="Attendant">Attendant</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="quickRadio" id="Absent" value="Absent" />
+                                <input class="form-check-input" type="radio" name="choice" id="Absent" value="Absent" />
                                 <label class="form-check-label" for="Absent">Absent</label>
                             </div>
                         </div>
                         <div class="d-flex justify-content-center" style="margin-top: 8vh;">
                             <button type="submit" class="btn btn-lg btn-primary">Record</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="modal fade" id="studentAbsModal" tabindex="-1" aria-labelledby="studentAbsModal" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content px-5 pb-3">
-                <div class="modal-header d-flex justify-content-center">
-                    <h5 class="modal-title">Student absence</h5>
-                </div>
-                <div class="modal-body">
-                    <form action="">
-                        <div class="mb-2 fw-bold text-muted">
-                            <label class="form-label" for="stID">Student ID:</label>
-                            <input class="form-control" type="number" id="stID" name="stID" placeholder="Ex: 20186030"  />
-                        </div>
-                        <div class="d-flex justify-content-center mt-5">
-                            <button type="submit" class="btn btn-lg btn-primary">get absence</button>
                         </div>
                     </form>
                 </div>

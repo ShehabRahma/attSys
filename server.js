@@ -12,7 +12,7 @@ const passport      = require('passport');
 const flash         = require('express-flash')
 const session       = require('express-session')
 const initializePassport = require('./passport-config');
-const {homeGET, loginGET, quickRecord, exportAll, exportSingle, averageAtt, logoutGET, courseGET, flagsGET, adminPOST, Auth, NotAuth} = require('./routes')
+const {homeGET, loginGET, quickRecord, exportAll, exportSingle, averageAtt, recordCourseAtt, logoutGET, courseGET, flagsGET, adminPOST, Auth, NotAuth} = require('./routes')
 if(process.env.NODE_ENV !== 'production') require('dotenv').config()
 
 initializePassport(passport)
@@ -42,7 +42,7 @@ app.get('/course/:id', Auth, courseGET);
 app.get('/course', Auth, courseGET);
 app.get('/logout', logoutGET);
 app.get('/flags', flagsGET);
-app.get('/averageAtt/:id', Auth, averageAtt);
+app.get('/averageAtt/:courseID', Auth, averageAtt);
 
 app.post('/admin', Auth, adminPOST);
 app.post('/quickRecord', Auth, quickRecord);
@@ -53,6 +53,7 @@ app.post('/login', passport.authenticate('local', {
 }));
 app.post('/exportAll', Auth, exportAll);
 app.post('/exportSingle/:id', Auth, exportSingle);
+app.post('/recordCourseAtt/:courseID', Auth, recordCourseAtt);
 
 
 // app.get('/temp', async(req, res) => {
