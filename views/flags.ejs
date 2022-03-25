@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%-include('./partials/essentialsHead.ejs')%>
+    <%-include('./partials/MDB-GoogleFonts.ejs')%>
+
+    <style>
+        .card{
+            max-width: 90%;
+            max-height: 90%;
+        }
+    </style>
+</head>
+<body>
+    <body class="bg-light">
+        <%-include('./partials/navbar.ejs')%>
+    
+        <section style="min-height: 100vh; margin-bottom: 15vh;">
+        
+            <div class="container-fluid p-5">
+                <div class="row">
+                    <div class="col-md">
+                        <h1 class="text-center text-muted">ITCE101-1 &nbsp;&nbsp;|&nbsp;&nbsp; 2022-03-20</h1>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container" style="margin-top: 10vh;">
+                <div class="row">
+                    <div class="col d-flex justify-content-center">
+                        <div class="card text-center border shadow-4-strong flagged">
+                            <div class="bg-image hover-overlay ripple" data-mdb-ripple-color="light">
+                              <img src="https://mdbootstrap.com/img/new/standard/nature/111.webp" class="img-thumbnail rounded" />
+
+                            </div>
+                          
+                            <div class="card-body">
+                              <h5 class="card-title">20185068</h5>
+                          
+                            </div>
+                          </div>
+                    </div>
+                    <div class="col d-flex justify-content-center">
+                        <div class="card text-center border shadow-4-strong flagged">
+                            <div class="bg-image hover-overlay ripple" data-mdb-ripple-color="light">
+                              <img src="https://mdbootstrap.com/img/new/standard/nature/111.webp" class="img-thumbnail rounded" />
+
+                            </div>
+                          
+                            <div class="card-body">
+                              <h5 class="card-title">20186030</h5>                          
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </body>
+
+    <!-- Footer & MDB CDN -->
+    <%-include('./partials/footer&MDB.ejs')%>
+</body>
+</html>

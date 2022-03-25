@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%-include('./partials/essentialsHead.ejs')%>
+    <%-include('./partials/MDB-GoogleFonts.ejs')%>
+    <style>
+        .options{
+            background-color: #2674f2;
+        }
+        hr{
+            border-top: 3px solid;
+            width: 5%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .alert {
+            padding: 20px;
+            background-color: #f44336;
+            color: white;
+            opacity: 1;
+            transition: opacity 0.6s;
+            margin-bottom: 2vh;
+        }
+
+        .alert.success {background-color: #04AA6D;}
+        .alert.info {background-color: #2196F3;}
+        .alert.warning {background-color: #ff9800;}
+        .alert.info {background-color: #2196F3;}
+
+        .closebtn {
+            margin-left: 15px;
+            color: white;
+            font-weight: bold;
+            float: right;
+            font-size: 22px;
+            line-height: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .closebtn:hover {
+            color: black;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <%-include('./partials/navbar.ejs')%>
+
+    <% if(message){ %> 
+        <% if (messageTheme === 'warning') {%> 
+            <div class="alert warning" >
+                <span class="closebtn" onclick="this.parentElement.style.opacity = '0'; setTimeout(() => { this.parentElement.style.display = 'none';}, 600);">&times;</span>  
+                <h6 class="fw-bold text-center"> <%= messageContent %> </h6>
+            </div>
+        <% }else if(messageTheme === 'success'){ %>
+                <div class="alert success" >
+                    <span class="closebtn" onclick="this.parentElement.style.opacity = '0'; setTimeout(() => { this.parentElement.style.display = 'none';}, 600);">&times;</span>  
+                    <h6 class="fw-bold text-center"> <%= messageContent %> </h6>
+                </div>
+
+        <%  }else if(messageTheme === 'info'){ %>
+                <div class="alert info" >
+                    <span class="closebtn" onclick="this.parentElement.style.opacity = '0'; setTimeout(() => { this.parentElement.style.display = 'none';}, 600);">&times;</span>  
+                    <h6 class="fw-bold text-center"> <%= messageContent %> </h6>
+                </div>
+
+        <% } else{%>  
+                <div class="alert" >
+                    <span class="closebtn" onclick="this.parentElement.style.opacity = '0'; setTimeout(() => { this.parentElement.style.display = 'none';}, 600);">&times;</span>  
+                    <h6 class="fw-bold text-center"> <%= messageContent %> </h6>
+                </div>
+                <% }; %> 
+    <% }; %>  
+
+    <section style="min-height: 100vh; margin-bottom: 15vh;">
+        <div class="container-fluid p-5">
+            <div class="row">
+                <div class="col-md">
+                    <h1 class="text-center"><%= id %></h1>
+                </div>
+            </div>
+            <div class="row mt-5">
+                <div class="col">
+                    <div class="d-flex justify-content-center">
+                        <button class="btn btn-lg options text-light mx-4" data-mdb-toggle="modal" data-mdb-target="#recordAttModal">Record</button>                    
+                        <button class="btn btn-lg options text-light mx-4" data-mdb-toggle="modal" data-mdb-target="#averageAttModal">Average</button>                    
+                        <button class="btn btn-lg options text-light mx-4" data-mdb-toggle="modal" data-mdb-target="#exportAttModal">Export</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container" style="margin-top: 8vh;">
+            <div class="row">
+                <div class="col">
+                    <h3 class="text-center">Flagged Dates</h3>    
+                </div>
+            </div>
+            
+            <hr>
+
+            <div class="row row-cols-3 mt-5">
+                <div class="col my-3"><button class="btn btn-lg d-block mx-auto">Hii</button></div>
+                <div class="col my-3"><button class="btn btn-lg d-block mx-auto">Hii</button></div>
+                <div class="col my-3"><button class="btn btn-lg d-block mx-auto">Hii</button></div>
+                <div class="col my-3"><button class="btn btn-lg d-block mx-auto">Hii</button></div>
+                <div class="col my-3"><button class="btn btn-lg d-block mx-auto">Hii</button></div>
+                <div class="col my-3"><button class="btn btn-lg d-block mx-auto">Hii</button></div>
+            </div>
+        </div>
+    </section>
+
+    <div class="modal fade" id="recordAttModal" tabindex="-1" aria-labelledby="recordAttModal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content px-5 pb-3">
+                <div class="modal-header d-flex justify-content-center">
+                    <h5 class="modal-title">Record Attendance</h5>
+                </div>
+                <div class="modal-body">
+                    <% const recordCourseAtt = `/recordCourseAtt/${id}` %> 
+                    <form method="POST" action=<%= recordCourseAtt %> >
+                        <div>
+                            <label class="form-label" for="stuList">ID's List: </label>
+                            <textarea class="form-control" id="stuList" name="stuList" rows="5" placeholder='Ex: 20186030 20185068 ..... write "All" to select the whole section.'></textarea>
+                          </div>
+                        <div class="d-flex justify-content-center mt-3">
+                            <input type="date" id="date" name="date" required>
+                        </div>
+                        <div class="d-flex justify-content-center mt-5">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="choice" id="Attendant" value="Attendant" checked/>
+                                <label class="form-check-label" for="Attendant">Attendant</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="choice" id="Absent" value="Absent" />
+                                <label class="form-check-label" for="Absent">Absent</label>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-center" style="margin-top: 8vh;">
+                            <button type="submit" class="btn btn-lg btn-primary">Record</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="averageAttModal" tabindex="-1" aria-labelledby="averageAttModal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content px-5 pb-4">
+                <div class="modal-header d-flex justify-content-center">
+                    <h5 class="modal-title">Average Attendance</h5>
+                </div>
+                <div class="modal-body">
+                    <% const averageAction = `/averageAtt/${id}` %> 
+                    <form id="averageForm" method="GET" action=<%= averageAction %> >
+                        <div class="my-4 fw-bold text-muted">
+                            <label class="me-2" for="fromDate">From: </label>
+                            <input type="date" id="fromDate" name="fromDate" required>
+                        </div>
+                        <div class="my-4 fw-bold text-muted">
+                            <label class="me-2" for="toDate">To: </label>
+                            <input type="date" id="toDate" name="toDate" required>
+                        </div>
+                        <div class="d-flex justify-content-center" style="margin-top: 8vh;">
+                            <button type="submit" class="btn btn-lg btn-primary">get average</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="exportAttModal" tabindex="-1" aria-labelledby="exportAttModal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content px-5 pb-4">
+                <div class="modal-header d-flex justify-content-center">
+                    <h5 class="modal-title">Export Attendance</h5>
+                </div>
+                <div class="modal-body">
+                    <% const exportAction = `/exportSingle/${id}` %> 
+                    <form method="POST" action=<%= exportAction %> >
+                        <div class="my-4 fw-bold text-muted">
+                            <label class="me-2" for="fromDate">From: </label>
+                            <input type="date" id="fromDate" name="fromDate" required>
+                        </div>
+                        <div class="my-4 fw-bold text-muted">
+                            <label class="me-2" for="toDate">To: </label>
+                            <input type="date" id="toDate" name="toDate" required>
+                        </div>
+                        <div class="fw-bold text-muted my-4">
+                            <label class="me-2" for="format">Format: </label>
+                            <div class="btn-group" id="format">
+                                <input type="radio" class="btn-check" name="docFormat" value="EXCEL" id="EXCEL" autocomplete="off" checked/>
+                                <label class="btn btn-light" for="EXCEL">EXCEL</label>
+
+                                <input type="radio" class="btn-check" name="docFormat" value="JSON" id="JSON" autocomplete="off"  />
+                                <label class="btn btn-light" for="JSON">JSON</label>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-center" style="margin-top: 8vh;">
+                            <button type="submit" class="btn btn-lg btn-primary">Export</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer & MDB CDN -->
+    <%-include('./partials/footer&MDB.ejs')%>
+</body>
+</html>
