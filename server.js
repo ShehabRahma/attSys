@@ -3,8 +3,8 @@ const bcrypt        = require('bcrypt');
 const express       = require('express');
 const app           = express();
 const mongoose      = require("mongoose")
-const dotenv        = require('dotenv').config({path : path.join(__dirname,'.env')})
-const DB_LINK       = process.env.DB_LINK
+// const dotenv        = require('dotenv').config({path : path.join(__dirname,'.env')})
+// const DB_LINK       = process.env.DB_LINK
 const User          = require('./Models/userModel')
 const Course          = require('./Models/courseModel')
 const Room          = require('./Models/roomModel')
@@ -17,7 +17,7 @@ if(process.env.NODE_ENV !== 'production') require('dotenv').config()
 
 initializePassport(passport)
 
-mongoose.connect(DB_LINK)
+mongoose.connect("mongodb+srv://shihab:wOgAkPriU0cDHetn@cluster0.wfql7.mongodb.net/attendance?authSource=admin&replicaSet=atlas-2z7q2m-shard-0&w=majority&readPreference=primary&retryWrites=true&ssl=true")
 .then( () => console.log("connected to db"))
 .catch( err => console.error(err.message))
 
@@ -27,7 +27,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(flash())
 app.use(session({
-    secret: process.env.SESSION_SECRETE,
+    secret: "Very Very Very Secret shit",
     resave: false,
     saveUninitialized: false
 }))
@@ -56,10 +56,8 @@ app.post('/exportSingle/:id', Auth, exportSingle);
 app.post('/recordCourseAtt/:courseID', Auth, recordCourseAtt);
 
 
-// app.get('/temp', async(req, res) => {
-//     console.log(req.query.id)
-//     res.send(req.query.id)
-// });
+
+
 
 app.get('*', function(req, res){
     res.render('404');
