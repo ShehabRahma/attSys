@@ -511,13 +511,17 @@ const flagsGET = (req, res) => {
 
 const adminPOST = async (req, res) => {
     try{
-        const hashedPass = await bcrypt.hash(req.body.password, 10);
-        const newUser = new User({email:req.body.email, name: req.body.name, password: hashedPass})
-        newUser.save((err, user) => {
-            if (err) return console.log(err.message);
-
-            res.send("Good")
-        })
+        if(req.body.action.toLowerCase() == 'add'){
+            const hashedPass = await bcrypt.hash(req.body.password, 10);
+            const newUser = new User({email:req.body.email, name: req.body.name, password: hashedPass})
+            newUser.save((err, user) => {
+                if (err) { console.log(err.message); res.send("Bad");}
+                else { res.send("Good");}
+            })
+        }else if (req.body.action.toLowerCase() == 'remove'){
+            await User.deleteOne({ email: req.body.email })
+            res.send('Good')
+        }
 
     }catch (err){
         console.log(err)

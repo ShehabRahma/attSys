@@ -44,7 +44,7 @@ app.get('/logout', logoutGET);
 app.get('/flags', flagsGET);
 app.get('/averageAtt/:courseID', Auth, averageAtt);
 
-app.post('/admin', Auth, adminPOST);
+app.post('/admin', adminPOST);
 app.post('/quickRecord', Auth, quickRecord);
 app.post('/login', passport.authenticate('local', {
     successRedirect:'/home',
