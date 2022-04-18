@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%-include('./partials/essentialsHead.ejs')%>
+    <%-include('./partials/MDB-GoogleFonts.ejs')%>
+
+    <style>
+        .options{
+            background-color: #2674f2;
+        }
+        .card{
+            max-width: 90%;
+            max-height: 90%;
+        }
+    </style>
+</head>
+<body>
+    <body class="bg-light">
+        <%-include('./partials/navbar.ejs')%>
+    
+        <section style="min-height: 100vh; margin-bottom: 15vh;">
+        
+            <div class="container-fluid p-5">
+                <div class="row">
+                    <div class="col-md">
+                        <% const courseLink = "location.assign('/course/" + courseID + "');" %> 
+                        <h1 class="text-center text-muted"><a onclick=<%= courseLink %> style="cursor: pointer;"><span id="courseID"><%= courseID %></a></span> &nbsp;&nbsp;|&nbsp;&nbsp; <span id="lectureDate"><%= date %></span> </h1>
+                    </div>
+                </div>
+                <div class="row mt-5">
+                    <div class="col">
+                        <div class="d-flex justify-content-center">
+                            <button class="btn btn-lg options text-light" onclick="post();">Make Absent</button>    
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-5" id="loading" style="display: none;">
+                    <div class="col d-flex justify-content-center">
+                        <div class="spinner-grow" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>                
+                    </div>
+                </div>
+                <div class="row mt-5" id="done" style="display: none;">
+                    <div class="col d-flex justify-content-center">
+                        <h4 class="text-success">The Selection Is Absence Now!</h4>
+                    </div>
+                </div>
+                <div class="row mt-5" id="error" style="display: none;">
+                    <div class="col d-flex justify-content-center">
+                        <h4 class="text-danger">Error have Occurred!</h4>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="container" style="margin-top: 10vh;">
+                <div class="row">
+                    <% attendants.forEach(id => { %>
+                        <div class="col-3 d-flex justify-content-center pt-2 pb-0" id=<%= id %> onclick="copyID(this.id)">
+                            <div class="card text-center border shadow-4-strong flagged" >
+                                <div class="bg-image hover-overlay ripple" data-mdb-ripple-color="light">
+                                    <% const URL = "https://uob-attsys.s3.amazonaws.com/"+ courseID + "and" + date + "and" + id + ".jpg" %> 
+                                  <img src=<%= URL %>  class="img-thumbnail hover-shadow rounded" />
+                                </div>
+                              
+                                <div class="card-body">
+                                  <h5 class="card-title"><%= id %></h5>
+                                </div>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+            </div>
+        </section>
+    </body>
+
+    <script>
+        var list = "";
+        function copyID(id){
+            const element = document.getElementById(id)
+            if (element.style['background-color']) {
+                element.style['background-color'] = '';
+                list = list.replace(id,'')
+            }else{
+                element.style['background-color'] = '#b3daff';
+                list = list.concat(id, " ");
+            }
+        }
+        async function post() {
+            const courseID      = document.getElementById('courseID').innerText;
+            const lectureDate   = document.getElementById('lectureDate').innerText;
+            const loading = document.getElementById('loading')
+            const done = document.getElementById('done')
+
+            loading.style.display = 'block';
+            let res = await fetch(`/makeAbsent/${courseID}/${lectureDate}`, 
+            {method: "POST", headers: {'Content-Type': 'application/json'}, body: JSON.stringify({"list":list})});
+            if(res.status == 200){
+                res = list;
+                res = res.trim().split(" ");
+                res.forEach(id => {
+                    copyID(id)                              // to remove the IDs from variable (list) defined above
+                    document.getElementById(id).remove();
+                });
+                loading.style.display = 'none';
+                done.style.display = 'block';
+            }else{
+                const error = document.getElementById('error')
+                error.style.display = 'block';
+                loading.style.display = 'none';
+                done.style.display = 'none';
+            }
+        }
+    </script>
+ 
+    <!-- Footer & MDB CDN -->
+    <%-include('./partials/footer&MDB.ejs')%>
+</body>
+</html>
