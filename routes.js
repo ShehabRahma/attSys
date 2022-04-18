@@ -473,9 +473,6 @@ const recordCourseAtt = async (req, res) => {
                         messageContent: "Students recorded successfully!", messageTheme: "success"});
                 }
                 
-
-
-                
                 async function recordAtt(){
                     if(choice === 'Attendant'){
                         IDs.forEach( async (id) => {
@@ -514,45 +511,56 @@ const recordCourseAtt = async (req, res) => {
 
 
 const picsGET = async (req, res) => {
-    const courseID          = req.params.courseID;
-    const date              = req.params.date;
-    const courses           = req.session.coursesQueried; 
-    const found             = courses.some(course => course.courseID == courseID);           // check if the Dr teaches this requested course & get that course 
-
-    if( found ){
-        const parsedQuery   = await queryCourses({instructor_email: req.user.email, courseID: source},{_id: 0, roomID: 1})
-        const studAtt       = JSON.parse(JSON.stringify(await Room.findById(parsedQuery[0].roomID, { _id: 0, studAtt: 1 }))).studAtt;
-        const attendants    = studAtt[date]
-        const allDates      = Object.keys(studAtt);                                                              // all lecture dates available for this course in the DB
-
-
-        if(! allDates.includes(date)){
-            res.render("home", {title: "Home", user: req.user, courses, message: true, messageContent: `There is no lecture in this chosen date: ${date}`, messageTheme: 'warning'})
+    try {
+        const courseID          = req.params.courseID;
+        const date              = req.params.date;
+        const courses           = req.session.coursesQueried; 
+        const found             = courses.some(course => course.courseID == courseID);           // check if the Dr teaches this requested course & get that course 
+    
+        if( found ){
+            const parsedQuery   = await queryCourses({instructor_email: req.user.email, courseID: source},{_id: 0, roomID: 1})
+            const studAtt       = JSON.parse(JSON.stringify(await Room.findById(parsedQuery[0].roomID, { _id: 0, studAtt: 1 }))).studAtt;
+            const attendants    = studAtt[date]
+            const allDates      = Object.keys(studAtt);                                                              // all lecture dates available for this course in the DB
+    
+    
+            if(! allDates.includes(date)){
+                res.render("home", {title: "Home", user: req.user, courses, message: true, messageContent: `There is no lecture in this chosen date: ${date}`, messageTheme: 'warning'})
+            }else{
+                res.render("pics", {title: "Pics", courseID, date: req.params.date, attendants})
+            }
+            
         }else{
-            res.render("pics", {title: "Pics", courseID, date: req.params.date, attendants})
+            res.render("home", {title: "Home", user: req.user, courses, message: true, messageContent: `You dont have access to this course: ${courseID}`, messageTheme: 'warning'})
         }
-        
-    }else{
-        res.render("home", {title: "Home", user: req.user, courses, message: true, messageContent: `You dont have access to this course: ${courseID}`, messageTheme: 'warning'})
+    
+    } catch (err) {
+        console.log(err);
+        res.send(err.message);        
     }
 }
 
 const makeAbsent = async(req, res) => {
-    const courseID      = req.params.courseID
-    const date          = req.params.date
-    const courses       = req.session.coursesQueried; 
-    const found         = courses.some(course => course.courseID == courseID);           // check if the Dr teaches this requested course & get that course 
-    const nestedPath    = 'studAtt.' + date
-    
-    if( found ){
-        const parsedQuery = await queryCourses({instructor_email: req.user.email, courseID: source},{_id: 0, roomID: 1})
-        let list = req.body.list.trim().split(" ").map(Number);
-
-        await Room.findByIdAndUpdate(parsedQuery[0].roomID, { $pullAll: { [nestedPath] : list }});
-        res.sendStatus(200)
+    try {
+        const courseID      = req.params.courseID
+        const date          = req.params.date
+        const courses       = req.session.coursesQueried; 
+        const found         = courses.some(course => course.courseID == courseID);           // check if the Dr teaches this requested course & get that course 
+        const nestedPath    = 'studAtt.' + date
         
-    }else{
-        res.render("home", {title: "Home", user: req.user, courses, message: true, messageContent: `You dont have access to this course: ${courseID}`, messageTheme: 'warning'})
+        if( found ){
+            const parsedQuery = await queryCourses({instructor_email: req.user.email, courseID: source},{_id: 0, roomID: 1})
+            let list = req.body.list.trim().split(" ").map(Number);
+    
+            await Room.findByIdAndUpdate(parsedQuery[0].roomID, { $pullAll: { [nestedPath] : list }});
+            res.sendStatus(200)
+            
+        }else{
+            res.render("home", {title: "Home", user: req.user, courses, message: true, messageContent: `You dont have access to this course: ${courseID}`, messageTheme: 'warning'})
+        }
+    } catch (err) {
+        console.log(err);
+        res.send(err.message);
     }
 }
 
