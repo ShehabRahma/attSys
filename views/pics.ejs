@@ -57,7 +57,7 @@
             <div class="container" style="margin-top: 10vh;">
                 <div class="row">
                     <% attendants.forEach(id => { %>
-                        <div class="col-3 d-flex justify-content-center pt-2 pb-0" id=<%= id %> onclick="copyID(this.id)">
+                        <div class="col-3 d-flex justify-content-center pt-2 pb-0" id=<%= id %> onclick="copyID(this.id)" style="cursor: pointer;">
                             <div class="card text-center border shadow-4-strong flagged" >
                                 <div class="bg-image hover-overlay ripple" data-mdb-ripple-color="light">
                                     <% const URL = "https://uob-attsys.s3.amazonaws.com/"+ courseID + "and" + date + "and" + id + ".jpg" %> 

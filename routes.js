@@ -415,7 +415,7 @@ const averageAtt = async (req, res) => {
             sum += (studAtt[date].length)/numOfStu;
         })
         const average = ((sum/numOfLectures) * 100).toFixed(1);
-        res.render("course", {title: courseID, id: courseID, message: true, messageContent: `From: [${from}] To: [${to}] = ${average}%`, messageTheme: 'info'});
+        res.render("course", {title: courseID, id: courseID, allDates, message: true, messageContent: `From: [${from}] To: [${to}] = ${average}%`, messageTheme: 'info'});
     
     } catch (err) {
         console.log(err);
@@ -549,7 +549,7 @@ const makeAbsent = async(req, res) => {
         const nestedPath    = 'studAtt.' + date
         
         if( found ){
-            const parsedQuery = await queryCourses({instructor_email: req.user.email, courseID: source},{_id: 0, roomID: 1})
+            const parsedQuery = await queryCourses({instructor_email: req.user.email, courseID: courseID},{_id: 0, roomID: 1})
             let list = req.body.list.trim().split(" ").map(Number);
     
             await Room.findByIdAndUpdate(parsedQuery[0].roomID, { $pullAll: { [nestedPath] : list }});
