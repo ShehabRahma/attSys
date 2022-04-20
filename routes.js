@@ -518,7 +518,7 @@ const picsGET = async (req, res) => {
         const found             = courses.some(course => course.courseID == courseID);           // check if the Dr teaches this requested course & get that course 
     
         if( found ){
-            const parsedQuery   = await queryCourses({instructor_email: req.user.email, courseID: source},{_id: 0, roomID: 1})
+            const parsedQuery   = await queryCourses({instructor_email: req.user.email, courseID: courseID},{_id: 0, roomID: 1})
             const studAtt       = JSON.parse(JSON.stringify(await Room.findById(parsedQuery[0].roomID, { _id: 0, studAtt: 1 }))).studAtt;
             const attendants    = studAtt[date]
             const allDates      = Object.keys(studAtt);                                                              // all lecture dates available for this course in the DB
