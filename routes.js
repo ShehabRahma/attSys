@@ -519,15 +519,17 @@ const picsGET = async (req, res) => {
     
         if( found ){
             const parsedQuery   = await queryCourses({instructor_email: req.user.email, courseID: courseID},{_id: 0, roomID: 1})
-            const studAtt       = JSON.parse(JSON.stringify(await Room.findById(parsedQuery[0].roomID, { _id: 0, studAtt: 1 }))).studAtt;
+            const roomQuery     = JSON.parse(JSON.stringify(await Room.findById(parsedQuery[0].roomID, { _id: 0, studAtt: 1, flags: 1 })));
+            const studAtt       = roomQuery.studAtt;
             const attendants    = studAtt[date]
             const allDates      = Object.keys(studAtt);                                                              // all lecture dates available for this course in the DB
+            const flagged       = roomQuery.flags[date];
     
     
             if(! allDates.includes(date)){
                 res.render("home", {title: "Home", user: req.user, courses, message: true, messageContent: `There is no lecture in this chosen date: ${date}`, messageTheme: 'warning'})
             }else{
-                res.render("pics", {title: "Pics", courseID, date: req.params.date, attendants})
+                res.render("pics", {title: "Pics", courseID, date: req.params.date, attendants, flagged})
             }
             
         }else{
@@ -547,12 +549,16 @@ const makeAbsent = async(req, res) => {
         const courses       = req.session.coursesQueried; 
         const found         = courses.some(course => course.courseID == courseID);           // check if the Dr teaches this requested course & get that course 
         const nestedPath    = 'studAtt.' + date
+        const nestedPath2   = 'flags.' + date
         
         if( found ){
             const parsedQuery = await queryCourses({instructor_email: req.user.email, courseID: courseID},{_id: 0, roomID: 1})
-            let list = req.body.list.trim().split(" ").map(Number);
-    
-            await Room.findByIdAndUpdate(parsedQuery[0].roomID, { $pullAll: { [nestedPath] : list }});
+            let absentList = req.body.list.trim().split(" ").map(Number);
+            
+            await Room.findByIdAndUpdate(parsedQuery[0].roomID, { $pullAll: { [nestedPath] : absentList }});
+            
+            await Room.findByIdAndUpdate(parsedQuery[0].roomID, { $addToSet: { [nestedPath2] : {$each: absentList} }});
+
             res.sendStatus(200)
             
         }else{
@@ -583,8 +589,6 @@ const adminPOST = async (req, res) => {
         res.send(err.message)
     }
 }
-
-
 
 const Auth = (req, res, next) => {                              // similar to isLoggedIn 
     if(req.isAuthenticated()) next();
