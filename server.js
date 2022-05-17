@@ -55,17 +55,6 @@ app.post('/recordCourseAtt/:courseID', Auth, recordCourseAtt);
 app.post('/makeAbsent/:courseID/:date', Auth, makeAbsent)
 
 
-// app.get('/temp', (req, res) => {
-//     // const AWS_ACCESS_KEY_ID = "AKIA26RR2DP4LSCGSDOE"
-//     // const AWS_ACCESS_KEY_SECRET = "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"
-//     // const AWS_BUCKET_NAME = "uob-attsys"
-
-
-
-// });
-
-
-
 
 
 app.get('*', function(req, res){
