@@ -97,25 +97,37 @@
         </div>
 
         <div class="container" style="margin-top: 8vh;">
-            <!-- <div class="row">
-                <div class="col">
-                    <h3 class="text-center">Attendants Photos</h3>    
-                </div>
-            </div> -->
+          
+            <% const UTH = [0, 2, 4]; %> 
+            <% const isItUTH = UTH.includes(new Date(allDates[0]).getDay()); %> 
             
-            <!-- <hr class="sep1"> -->
+            <!-- <hr class="sep2 mt-2 mb-5"> -->
+            <% if(isItUTH){ %>
+                <div class="row row-cols-3 mt-5">
+                
+                    <div class="col mb-3"><h2 class="text-center text-muted">U</h2></div>
+                    <div class="col mb-3"><h2 class="text-center text-muted">T</h2></div>
+                    <div class="col mb-3"><h2 class="text-center text-muted">H</h2></div>
+    
+                    <% allDates.forEach(date => { %>
+                        <% const redirect = "location.assign('/pics/" + id + "/" + date + "')" %>
+                        <div class="col my-4" onclick=<%= redirect %>><button class="btn btn-lg d-block fw-bold text-muted mx-auto"><%= date %></button></div>
+                    <% }) %>                    
+                </div>
+                
+            <% } else{ %>  
+                <div class="row row-cols-2 mt-5">
+                
+                    <div class="col mb-3"><h2 class="text-center text-muted">M</h2></div>
+                    <div class="col mb-3"><h2 class="text-center text-muted">W</h2></div>
+    
+                    <% allDates.forEach(date => { %>
+                        <% const redirect = "location.assign('/pics/" + id + "/" + date + "')" %>
+                        <div class="col my-4" onclick=<%= redirect %>><button class="btn btn-lg d-block fw-bold text-muted mx-auto"><%= date %></button></div>
+                    <% }) %>                    
+                </div>
+            <% } %>
 
-            <div class="row row-cols-3 mt-5">
-                <div class="col mb-2"><h2 class="text-center text-muted">U</h2></div>
-                <div class="col mb-2"><h2 class="text-center text-muted">T</h2></div>
-                <div class="col mb-2"><h2 class="text-center text-muted">H</h2></div>
-                <!-- <hr class="sep2 mt-2 mb-5"> -->
-
-                <% allDates.forEach(date => { %>
-                    <% const redirect = "location.assign('/pics/" + id + "/" + date + "')" %>
-                    <div class="col my-4" onclick=<%= redirect %>><button class="btn btn-lg d-block fw-bold text-muted mx-auto"><%= date %></button></div>
-                <% }) %>                    
-            </div>
         </div>
     </section>
 
