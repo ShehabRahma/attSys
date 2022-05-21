@@ -15,7 +15,7 @@ if(process.env.NODE_ENV !== 'production') require('dotenv').config()
 
 initializePassport(passport)
 
-mongoose.connect("mongodb+srv://shihab:wOgAkPriU0cDHetn@cluster0.wfql7.mongodb.net/attendance?authSource=admin&replicaSet=atlas-2z7q2m-shard-0&w=majority&readPreference=primary&retryWrites=true&ssl=true")
+mongoose.connect("") // DB cred
 .then( () => console.log("connected to db"))
 .catch( err => console.error(err.message))
 
